@@ -1,151 +1,98 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React from 'react';
+import { View, Text } from 'react-native'
+// import Item from './components/Item'
+// import Form from './components/Form'
+// import FlatListComponent from './components/FlatList'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { NavigationContainer } from '@react-navigation/native'
+import ListCategory from './Screens/ListCategory'
+import DetailCategory from './Screens/DetailCategory'
+import About from './Screens/About'
+import Contact from './Screens/Contact'
+import Home from './Screens/Home';
+import User from './Screens/User';
+import Notification from './Screens/Notification';
+// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+// import Ionicons from 'react-native-vector-icons/Ionicons';
+import Login from './Screens/Login'
+import TopLogo from './components/TopLogo';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import variables from './constants/variables';
 
-import React, { useState, useEffect } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
- 
-function Section({children, title}) {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
+
+const Stack = createNativeStackNavigator();
+// const Tab = createBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
+
+const CategoryStackScreen = () => {
+  return(
+    <Stack.Navigator initialRouteName="ListCategory">
+      <Stack.Screen name="ListCategory" component={ListCategory} options={{ title: 'Danh sách category' }} />
+      <Stack.Screen name="DetailCategory" component={DetailCategory} options={{ title: 'Chi tiết danh mục' }} />
+    </Stack.Navigator>
+  )
 }
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-  const [ isSigninInProgress, setIsSigninInProgress ] = useState(false);
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-  const _signIn = async () => {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo)
-    //   this.setState({ userInfo: userInfo, loggedIn: true });
-    } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // user cancelled the login flow
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        // operation (f.e. sign in) is in progress already
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // play services not available or outdated
-      } else {
-        // some other error happened
-      }
-      console.log(error, error.code, 'error ....')
-    }
-  };
-
-  useEffect(() => {
-    GoogleSignin.configure({
-        // scopes: ['email', 'profile','https://www.googleapis.com/auth/drive.readonly'], 
-        webClientId: '519004758708-jas2cd85cuav7u4hvc16f6b20pqhfj33.apps.googleusercontent.com', 
-        offlineAccess: true, 
-        
-        });
-}, [])
-
-
-
-
+export default function App () {
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-       <GoogleSigninButton
-            size={GoogleSigninButton.Size.Wide}
-            color={GoogleSigninButton.Color.Dark}
-            onPress={_signIn}
-            disabled={isSigninInProgress}
-        />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+    <>
+      <TopLogo />
+      <NavigationContainer>
+        {/* <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'About') {
+              iconName = focused
+                ? 'ios-information-circle'
+                : 'ios-information-circle-outline';
+            } else if (route.name === 'Category') {
+              iconName = focused ? 'ios-list' : 'ios-list-outline';
+            }
+
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
+        })}
+        >
+          <Tab.Screen name="About" component={About} options={{ tabBarBadge: 3 }} />
+          <Tab.Screen name="Category" component={CategoryStackScreen} />
+          <Tab.Screen name="Login" component={Login} />
+        </Tab.Navigator> */}
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            tabBarShowLabel: false,
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName;
+
+              switch (route.name) {
+                case "Home":
+                  iconName = 'home';
+                  break;
+                case "Notification":
+                  iconName = 'bell';
+                  break;
+                case "Profile":
+                  iconName = 'user';
+                  break;
+                default:
+                  break;
+              }
+
+              return <Icon name={iconName} size={20} />;
+            },
+            tabBarActiveTintColor: 'tomato',
+            tabBarInactiveTintColor: 'gray',
+          })}
+        >
+          <Tab.Screen name={variables.Home} component={Home} />
+          <Tab.Screen name={variables.Notification} component={Notification} />
+          <Tab.Screen name={variables.User} component={User} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </>
+  )
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
-export default App;
