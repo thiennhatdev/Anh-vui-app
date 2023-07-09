@@ -1,11 +1,11 @@
-import { View, Text } from 'react-native'
+import { View, Text, Image } from 'react-native'
 import React from 'react'
 import styles from './style'
 
 const TopLogo = () => {
   return (
-    <View>
-      <Text style={styles.text}>ẢNH VUI</Text>
+    <View style={styles.wrapLogo}>
+      <Image style={ styles.logo } source={require('../../assets/images/logo-anhhaihuoc.png')} />
     </View>
   )
 }

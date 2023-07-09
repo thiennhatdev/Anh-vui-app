@@ -3,6 +3,6 @@ export default {
     spaceBetween: 'space-between',
     spaceAround: 'space-around',
     center: 'center',
-    start: 'flex-star',
+    start: 'flex-start',
     end: 'flex-end',
 }
