@@ -5,6 +5,7 @@ import DocumentPicker from 'react-native-document-picker'
 import PostItem from '../../components/PostItem';
 
 import styles from './style';
+import UserSelectFile from '../../components/UserSelectFile';
 
 const DATA = [
   {
@@ -73,20 +74,7 @@ const Home = (props) => {
   return (
     <View style={styles.wrapper}>
       {/* <ScrollView>  */}
-      <View style={styles.topHome}>
-        <View style={styles.avatar}>
-          <Ionicons name={"person-circle-outline"} size={30} />
-        </View>
-        <View style={styles.selectImage}>
-          <TouchableOpacity
-            onPress={docPicker}
-            style={styles.selectImageInner}
-          >
-            <Ionicons name={"folder-outline"} size={20} />
-            <Text style={styles.selectImageText}>Đăng ảnh</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <UserSelectFile />
       <View style={styles.contentHome}>
         <FlatList
           data={DATA}

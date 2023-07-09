@@ -2,7 +2,8 @@ export default {
     green: 'green',
     pink: 'pink',
     white: '#fff',
-    silver: 'silver',
+    black: '#000',
+    silver: '#bec6cf',
     lightSilver: '#eee',
-    blue: "blue"
+    blue: "#337ab7"
 }

@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import React from 'react';
 import { View, Text } from 'react-native'
 // import Item from './components/Item'
@@ -19,7 +20,9 @@ import Login from './Screens/Login'
 import TopLogo from './components/TopLogo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import variables from './constants/variables';
-
+import ProfileDetail from './components/ProfileDetail';
+import color from './commons/variable/color';
+  
 
 const Stack = createNativeStackNavigator();
 // const Tab = createBottomTabNavigator();
@@ -29,7 +32,7 @@ const CategoryStackScreen = () => {
   return(
     <Stack.Navigator initialRouteName="ListCategory">
       <Stack.Screen name="ListCategory" component={ListCategory} options={{ title: 'Danh sách category' }} />
-      <Stack.Screen name="DetailCategory" component={DetailCategory} options={{ title: 'Chi tiết danh mục' }} />
+      <Stack.Screen name="ListCategory" component={DetailCategory} options={{ title: 'Chi tiết danh mục' }} />
     </Stack.Navigator>
   )
 }
@@ -65,32 +68,33 @@ export default function App () {
         <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarShowLabel: false,
-            tabBarIcon: ({ focused, color, size }) => {
+            tabBarIcon: ({ focused, size }) => {
               let iconName;
 
               switch (route.name) {
-                case "Home":
+                case variables.Home:
                   iconName = 'home';
                   break;
-                case "Notification":
+                case variables.Notification:
                   iconName = 'bell';
                   break;
-                case "Profile":
-                  iconName = 'user';
+                case variables.User:
+                  iconName = 'user-circle-o';
                   break;
                 default:
                   break;
               }
 
-              return <Icon name={iconName} size={20} />;
+              return <Icon name={iconName} size={20} color={focused ? color.blue : 'gray'} />;
             },
-            tabBarActiveTintColor: 'tomato',
-            tabBarInactiveTintColor: 'gray',
+            // tabBarActiveTintColor: 'tomato',
+            // tabBarInactiveTintColor: 'gray',
           })}
         >
           <Tab.Screen name={variables.Home} component={Home} />
           <Tab.Screen name={variables.Notification} component={Notification} />
           <Tab.Screen name={variables.User} component={User} />
+          {/* <Tab.Screen name={variables.ProfileDetail} component={ProfileDetail} /> */}
         </Tab.Navigator>
       </NavigationContainer>
     </>
