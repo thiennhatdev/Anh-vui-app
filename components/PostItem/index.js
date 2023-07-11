@@ -2,11 +2,13 @@ import { View, Text, TouchableOpacity, Dimensions, Alert, Image } from 'react-na
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import CommentBottomSheet from '../CommentBottomSheet';
+import dayjs from 'dayjs';
 
 import styles from './style'
 
 const PostItem = (props) => {
-    const { navigation } = props;
+    const { navigation, item } = props;
+    const { id, attributes: { description, createdAt, link } } = item;
 
     const desiredWidth = Dimensions.get('window').width;
     const uri = "https://znews-photo.zingcdn.me/w480/Uploaded/hointt/2023_02_22/44_zing_1_1.jpg";
@@ -25,24 +27,24 @@ const PostItem = (props) => {
                     <Icon name="user-circle" size={20}/>
                     <View style={styles.postAuthorRight}>
                         <Text style={styles.name}>Thiên nhất</Text>
-                        <Text style={styles.createdTime}>03/07/2023</Text>
+                        <Text style={styles.createdTime}>{ dayjs(createdAt).format('DD/MM/YYYY') }</Text>
                     </View>
                 </View>
                 <View style={styles.postTitle}>
                     <Text style={styles.postTitleText}>
-                        title của post
+                        { description }
                     </Text>
                 </View>
                 <View>
                     <Image
-                    style={{
-                        borderWidth: 1,
-                        width: desiredWidth,
-                        height: desiredHeight
-                    }}
+                        style={{
+                            borderWidth: 1,
+                            width: desiredWidth,
+                            height: desiredHeight
+                        }}
                         // style={styles.postImage}
                         source={{
-                            uri
+                            uri: (link.data && link.data[0].attributes.url) || uri
                         }}
                     />
                 </View>
