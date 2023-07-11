@@ -14,15 +14,21 @@ import Contact from './Screens/Contact'
 import Home from './Screens/Home';
 import User from './Screens/User';
 import Notification from './Screens/Notification';
-// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-// import Ionicons from 'react-native-vector-icons/Ionicons';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from 'react-query';
 import Login from './Screens/Login'
 import TopLogo from './components/TopLogo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import variables from './constants/variables';
 import ProfileDetail from './components/ProfileDetail';
 import color from './commons/variable/color';
-  
+
+// startNetworkLogging();
 
 const Stack = createNativeStackNavigator();
 // const Tab = createBottomTabNavigator();
@@ -37,9 +43,11 @@ const CategoryStackScreen = () => {
   )
 }
 
+const queryClient = new QueryClient();
+
 export default function App () {
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <TopLogo />
       <NavigationContainer>
         {/* <Tab.Navigator
@@ -97,6 +105,6 @@ export default function App () {
           {/* <Tab.Screen name={variables.ProfileDetail} component={ProfileDetail} /> */}
         </Tab.Navigator>
       </NavigationContainer>
-    </>
+    </QueryClientProvider>
   )
 }

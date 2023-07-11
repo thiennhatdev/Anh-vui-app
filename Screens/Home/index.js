@@ -1,11 +1,21 @@
 import { View, Text, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import DocumentPicker from 'react-native-document-picker'
 import PostItem from '../../components/PostItem';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+  useInfiniteQuery
+} from 'react-query';
+import UserSelectFile from '../../components/UserSelectFile';
+import NetworkLogger from 'react-native-network-logger';
 
 import styles from './style';
-import UserSelectFile from '../../components/UserSelectFile';
+import { getImages } from '../../apis/image';
 
 const DATA = [
   {
@@ -51,8 +61,38 @@ const DATA = [
 
 ];
 
-const Home = (props) => {
+
+
+let Home = (props) => {
   const { navigation } = props;
+  const [params, setParams] = useState({
+    populate: "*",
+    pagination: {
+      pageSize: 3,
+    }
+  })
+  
+  const [ allPages, setAllPages] = useState(0);
+
+  const { isLoading, isFetching, isSuccess, data, hasNextPage, fetchNextPage } = useInfiniteQuery(
+    'images',
+    async ({ pageParam = 1 }) => getImages(params, pageParam),
+    {
+      getNextPageParam: (lastPage) => {
+        return lastPage.pageParam < allPages 
+                ? lastPage.pageParam + 1 
+                : false;
+      },
+    }
+  );
+  const total = data?.pages[0].data.data.meta.pagination.total;
+  const totalPage = Math.ceil(total / params.pagination.pageSize)
+
+  useEffect(() => {
+    if (isSuccess) {
+      setAllPages(totalPage)
+    }
+  }, [isSuccess, totalPage]);
 
   const docPicker = async () => {
     try {
@@ -71,20 +111,30 @@ const Home = (props) => {
     }
   }
 
+  const loadMore = () => {
+    console.log(hasNextPage, 'hasNextPage..........')
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  };
+
   return (
     <View style={styles.wrapper}>
       {/* <ScrollView>  */}
       <UserSelectFile />
       <View style={styles.contentHome}>
         <FlatList
-          data={DATA}
-          renderItem={({item}) => <PostItem item={item} navigation={navigation} />}
+          data={data?.pages.map(page => page.data.data.data).flat()}
+          renderItem={({ item }) => <PostItem item={item} navigation={navigation} />}
           keyExtractor={item => item.id}
+          onEndReached={loadMore}
         />
       </View>
       {/* </ScrollView> */}
     </View>
   )
 }
+
+// Home = () => <NetworkLogger />;
 
 export default Home
