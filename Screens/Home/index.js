@@ -66,7 +66,29 @@ const DATA = [
 let Home = (props) => {
   const { navigation } = props;
   const [params, setParams] = useState({
-    populate: "*",
+    populate: {
+      userId: {
+        populate: "*"
+      },
+      likes: {
+        populate: "*"
+      },
+      link: {
+        populate: "*"
+      },
+      comments: {
+        populate: {
+          comments: {
+            populate: {
+              likes: "*"
+            }
+          },
+          likes: {
+            populate: "*"
+          }
+        }
+      }
+    },
     pagination: {
       pageSize: 3,
     }
@@ -85,9 +107,9 @@ let Home = (props) => {
       },
     }
   );
-  const total = data?.pages[0].data.data.meta.pagination.total;
+  const total = data?.pages[0].data.meta.pagination.total;
   const totalPage = Math.ceil(total / params.pagination.pageSize)
-
+console.log(data, 'data on home')
   useEffect(() => {
     if (isSuccess) {
       setAllPages(totalPage)
@@ -124,10 +146,11 @@ let Home = (props) => {
       <UserSelectFile />
       <View style={styles.contentHome}>
         <FlatList
-          data={data?.pages.map(page => page.data.data.data).flat()}
+          data={data?.pages.map(page => page.data.data).flat()}
           renderItem={({ item }) => <PostItem item={item} navigation={navigation} />}
           keyExtractor={item => item.id}
           onEndReached={loadMore}
+          onEndReachedThreshold={0.3}
         />
       </View>
       {/* </ScrollView> */}
@@ -136,5 +159,5 @@ let Home = (props) => {
 }
 
 // Home = () => <NetworkLogger />;
-
+// 
 export default Home
