@@ -21,6 +21,11 @@ import {
   QueryClient,
   QueryClientProvider,
 } from 'react-query';
+import {
+  SafeAreaProvider,
+  initialWindowMetrics,
+} from 'react-native-safe-area-context';
+
 import Login from './Screens/Login'
 import TopLogo from './components/TopLogo';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -47,6 +52,7 @@ const queryClient = new QueryClient();
 
 export default function App () {
   return (
+    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
     <QueryClientProvider client={queryClient}>
       <TopLogo />
       <NavigationContainer>
@@ -106,5 +112,6 @@ export default function App () {
         </Tab.Navigator>
       </NavigationContainer>
     </QueryClientProvider>
+    </SafeAreaProvider>
   )
 }
