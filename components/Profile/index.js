@@ -18,8 +18,8 @@ const Drawer = createDrawerNavigator();
 
 const Profile = ({ navigation }) => {
   return (
-    <Drawer.Navigator initialRouteName="ProfileOptions" screenOptions={{ headerShown: false }}>
-      <Drawer.Screen name="ProfileOptions" component={ProfileOptions} />
+    <Drawer.Navigator initialRouteName={variables.ProfileOptions} screenOptions={{ headerShown: false }}>
+      <Drawer.Screen name={variables.ProfileOptions} component={ProfileOptions} />
       <Drawer.Screen name={variables.ProfileDetail} component={ProfileDetail} />
       <Drawer.Screen name={variables.UserImage} component={UserImage} />
     </Drawer.Navigator>

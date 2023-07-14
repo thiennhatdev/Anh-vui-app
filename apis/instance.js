@@ -14,7 +14,7 @@ const instance = axios.create({
 instance.interceptors.request.use((axiosConfig) => {
     axiosConfig.headers = {
       ...axiosConfig.headers,
-      Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjg5MTI2MDkwLCJleHAiOjE2OTE3MTgwOTB9.AqVXkxAU9w2M3uFMg04VSnoiLes_CKa5y6dXc5EQvYc`,
+      // Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjg5MTI2MDkwLCJleHAiOjE2OTE3MTgwOTB9.AqVXkxAU9w2M3uFMg04VSnoiLes_CKa5y6dXc5EQvYc`,
     };
   
     return axiosConfig;

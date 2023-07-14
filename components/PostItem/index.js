@@ -1,18 +1,22 @@
 import { View, Text, TouchableOpacity, Dimensions, Alert, Image } from 'react-native'
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import CommentBottomSheet from '../CommentBottomSheet';
 import dayjs from 'dayjs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import styles from './style'
 import Avatar from '../Avatar';
 import { useMutation } from 'react-query';
 import { like } from '../../apis/likes';
+import variables from '../../constants/variables';
 
 const PostItem = (props) => {
     const { navigation, item } = props;
     const { id, attributes: { description, createdAt, link, comments, likes, userId } } = item;
-    const isLogined = true;
+    const [isLogined,  setIsLogined] = useState(false);
+    const [userInfo, setUserInfo] = useState(false);
+
 
     const mutation = useMutation((data) => like(data), {
         onSuccess: async () => {
@@ -31,17 +35,28 @@ const PostItem = (props) => {
     })
 
     const actionLike = async () => {
-        if (!isLogined) navigation.navigate('User');
-
-        const body = {
-            data: {
-              imageId: id,
-              userId: "1"
-            }
-          }
-        await mutation.mutate(body);
-       
+        if (!userInfo) navigation.navigate(variables.User);
+console.log('error run when navigate')
+        // const body = {
+        //     data: {
+        //       imageId: id,
+        //       userId: "1"
+        //     }
+        //   }
+        // await mutation.mutate(body);
+        // const credentials = await AsyncStorage.getItem('user_info');
+        // console.log(credentials, 'credentials')
     }
+
+    const fetchUserInfo = useCallback(async () => {
+        const userInfo = await AsyncStorage.getItem('user_info');
+        setUserInfo(userInfo)
+        console.log(userInfo, 'userInfo')
+    }, [])
+
+    useEffect(() => {
+        fetchUserInfo();
+    }, [fetchUserInfo])
 
     return (
         <>

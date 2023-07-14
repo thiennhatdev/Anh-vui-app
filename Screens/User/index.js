@@ -1,24 +1,40 @@
 import { View, Text } from 'react-native'
-import React, { useState } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 import Auth from '../../components/Auth';
 import Profile from '../../components/Profile';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import ProfileDetail from '../../components/ProfileDetail';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from "@react-navigation/native"; 
 
-const Drawer = createDrawerNavigator();
 const User = (props) => {
   const { navigation } = props;
 
-    const [isLogin, setIsLogin] = useState(true);
+  const focus = useIsFocused(); 
+
+  const [userInfo, setUserInfo] = useState(false);
+  console.log('ffffff111')
+
+  const fetchUserInfo = useCallback(async () => {
+    const userInfo = await AsyncStorage.getItem('user_info');
+    setUserInfo(userInfo)
+    console.log(userInfo, 'userInfo profile')
+  }, [])
+
+  useEffect(() => {
+    fetchUserInfo();
+    console.log('ffffff2222')
+  }, [fetchUserInfo, focus])
+
 
   return (
-    !isLogin
-        ? <Auth />
-        : <Profile navigation={navigation}/>
-        // : <Drawer.Navigator initialRouteName="Profile" screenOptions={{ headerShown: false }}>
-        //   <Drawer.Screen name="Profile" component={Profile} />
-        //   <Drawer.Screen name="ProfileDetail" component={ProfileDetail} />
-        // </Drawer.Navigator>
+    !userInfo
+      ? <Auth navigation={navigation} />
+      : <Profile navigation={navigation} />
+    // : <Drawer.Navigator initialRouteName="Profile" screenOptions={{ headerShown: false }}>
+    //   <Drawer.Screen name="Profile" component={Profile} />
+    //   <Drawer.Screen name="ProfileDetail" component={ProfileDetail} />
+    // </Drawer.Navigator>
   )
 }
 
