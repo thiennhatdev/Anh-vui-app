@@ -1,15 +1,35 @@
 import { View, Text } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Auth = () => {
+import styles from './style'
+import { loginGoogle } from '../../apis/auth';
+
+import NetworkLogger from 'react-native-network-logger';
+
+let Auth = (props) => {
+  const { navigation } = props;
   const [ isSigninInProgress, setIsSigninInProgress ] = useState(false);
 
   const _signIn = async () => {
     try {
+      // const data = await GoogleSignin.signOut();
+      // console.log(data, 'data signout')
+
       await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo, 'userInfo')
+      await GoogleSignin.signIn();
+      const { accessToken } = await GoogleSignin.getTokens();
+      console.log(accessToken, 'accessToken in login')
+      const { jwt, user } = await loginGoogle(accessToken);
+      await AsyncStorage.setItem('user_info', JSON.stringify(user));
+      await AsyncStorage.setItem('token', jwt);
+      console.log('end AsyncStorage')
+      navigation.goBack();
+      // const { id } = user;
+      // console.log(jwt, user, 'user = jwt')
+      
+
     //   this.setState({ userInfo: userInfo, loggedIn: true });
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -37,8 +57,8 @@ const Auth = () => {
     }, [])
 
   return (
-    <View>
-
+    <View style={styles.wrapAuth}>
+      <Text style={styles.loginText}>Đăng nhập nhanh để chia sẽ những bức ảnh hài hước </Text>
         <GoogleSigninButton
             size={GoogleSigninButton.Size.Wide}
             color={GoogleSigninButton.Color.Dark}
@@ -48,5 +68,7 @@ const Auth = () => {
     </View>
   )
 }
+
+// Auth = () => <NetworkLogger />;
 
 export default Auth;

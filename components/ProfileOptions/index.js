@@ -10,50 +10,8 @@ import styles from './style';
 import color from '../../commons/variable/color';
 import ProfileDetail from '../ProfileDetail';
 import variables from '../../constants/variables';
-
-const DATA = [
-    {
-        id: 'bd7acbea-c1b1-46c2-aed5-3ad53aohbb28ba',
-        item: {
-            url: "ffff",
-            user: {
-                name: 'nhat',
-                avatar: 'sdfsdfsd'
-            }
-        },
-    },
-    {
-        id: 'bd7acdbea-c1b1-46c2-ased5-3ad53aohbb28ba',
-        item: {
-            url: "ffff",
-            user: {
-                name: 'nhat',
-                avatar: 'sdfsdfsd'
-            }
-        },
-    },
-    {
-        id: 'bd7dacbea-c1b1-46c2-aed5-3ad53aohbb28ba',
-        item: {
-            url: "ffff",
-            user: {
-                name: 'nhat',
-                avatar: 'sdfsdfsd'
-            }
-        },
-    },
-    {
-        id: 'bd7dacbea-c1b1-46c2-aed5-3ad53agohbb28ba',
-        item: {
-            url: "ffff",
-            user: {
-                name: 'nhat',
-                avatar: 'sdfsdfsd'
-            }
-        },
-    },
-
-];
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const ITEM_LIST = [
     {
@@ -75,9 +33,11 @@ const ITEM_LIST = [
 
 const ProfileOptions = ({ navigation }) => {
 
-    const navigate = (route) => {
+    const navigate = async (route) => {
         if (route === variables.Logout) {
-            console.log('logout')
+            await AsyncStorage.multiRemove(['user_info', 'token'])
+            await GoogleSignin.signOut();
+            navigation.navigate(variables.Home)
             return;
         }
         navigation.navigate(route)
