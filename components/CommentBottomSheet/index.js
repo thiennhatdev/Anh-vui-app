@@ -5,18 +5,19 @@ import CommentItem from '../CommentItem';
 import { useKeyboardHeight } from '../../hooks/getHeightKeyboard';
 import RBSheet from "react-native-raw-bottom-sheet";
 import { useSafeAreaFrame } from 'react-native-safe-area-context';
-import {debounce} from 'lodash';
+import { debounce } from 'lodash';
 
 import styles from './style'
 import { comment, getComments } from '../../apis/comments';
 import { useInfiniteQuery, useMutation, useQueryClient } from 'react-query';
 import space from '../../commons/variable/space';
 import color from '../../commons/variable/color';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
 const CommentBottomSheet = (props) => {
-    const { visibleBottomSheet, onVisibleBottomSheet, numberLikes, postId } = props;
+    const { navigation, visibleBottomSheet, onVisibleBottomSheet, numberLikes, postId } = props;
 
     const keyboardHeight = useKeyboardHeight();
     const inputRef = useRef();
@@ -24,14 +25,26 @@ const CommentBottomSheet = (props) => {
     const queryClient = useQueryClient();
     const ScreenHeight = useSafeAreaFrame().height;
 
+    const [userInfo, setUserInfo] = useState(false);
     const [allPages, setAllPages] = useState(0);
-    const [objTarget, setObjTarget] = useState({imageId: postId})
+    const [objTarget, setObjTarget] = useState({ imageId: postId })
     const [keyboardAvoiding, setKeyboardAvoiding] = useState(false)
     const [params, setParams] = useState({
         filters: {
             imageId: postId
         },
-        populate: "*",
+        populate: {
+            likes: {
+                populate: "*"
+            },
+            comments: {
+                populate: {
+                    likes: {
+                        populate: "*"
+                    }
+                }
+            }
+        },
         sort: "createdAt:desc",
         pagination: {
             pageSize: 10,
@@ -83,11 +96,11 @@ const CommentBottomSheet = (props) => {
 
         const body = {
             data: {
-              content: inputRef.current.value,
-              userId: "1",
-              ...objTarget
+                content: inputRef.current.value,
+                userId: userInfo.id,
+                ...objTarget
             }
-          }
+        }
         await mutation.mutate(body);
         inputRef.current.clear();
 
@@ -103,6 +116,16 @@ const CommentBottomSheet = (props) => {
     useEffect(() => {
         if (visibleBottomSheet) refRBSheet.current.open();
     }, [visibleBottomSheet])
+
+    const fetchUserInfo = useCallback(async () => {
+        const user = await AsyncStorage.getItem('user_info');
+        const parseUser = JSON.parse(user);
+        setUserInfo(parseUser);
+    }, [])
+
+    useEffect(() => {
+        fetchUserInfo();
+    }, [fetchUserInfo])
 
     return (
         <SafeAreaView style={styles.container}>
@@ -131,11 +154,11 @@ const CommentBottomSheet = (props) => {
                                     renderItem={({ item }) => {
                                         return (
                                             <View>
-                                                <CommentItem item={item} showInputReply={showInputReply} />
+                                                <CommentItem navigation={navigation} item={item} showInputReply={showInputReply} />
                                                 <View style={styles.replyList}>
                                                     <FlatList
                                                         data={item.attributes?.comments?.data}
-                                                        renderItem={({ item }) => <CommentItem item={item} showInputReply={showInputReply} />}
+                                                        renderItem={({ item }) => <CommentItem navigation={navigation} item={item} showInputReply={showInputReply} />}
                                                         keyExtractor={item => item.id}
                                                     />
                                                 </View>

@@ -1,5 +1,9 @@
-import instance from './instance';
+import requestAuth from '../utils/request/request-auth';
 
 export const like = async (body) => {
-    return instance.post('likes', body);
+    return requestAuth.post('likes', body);
+}
+
+export const dislike = async (id) => {
+    return requestAuth.delete(`likes/${id}`);
 }

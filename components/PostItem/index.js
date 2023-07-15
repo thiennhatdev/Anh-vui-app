@@ -3,24 +3,33 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import CommentBottomSheet from '../CommentBottomSheet';
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import styles from './style'
 import Avatar from '../Avatar';
 import { useMutation } from 'react-query';
-import { like } from '../../apis/likes';
+import { dislike, like } from '../../apis/likes';
 import variables from '../../constants/variables';
+import NetworkLogger from 'react-native-network-logger';
+import color from '../../commons/variable/color';
 
-const PostItem = (props) => {
+let PostItem = (props) => {
     const { navigation, item } = props;
     const { id, attributes: { description, createdAt, link, comments, likes, userId } } = item;
     const [isLogined,  setIsLogined] = useState(false);
     const [userInfo, setUserInfo] = useState(false);
 
+    const [likedUser, setLikedUser] = useState(false);
 
-    const mutation = useMutation((data) => like(data), {
+    const likeMutation = useMutation((data) => like(data), {
+        onSuccess: async (data) => {
+            setLikedUser(data.data)
+        },
+    });
+    const dislikeMutation = useMutation((id) => dislike(id), {
         onSuccess: async () => {
-            console.log("like success")
+            setLikedUser(null);
         },
     });
 
@@ -36,22 +45,28 @@ const PostItem = (props) => {
 
     const actionLike = async () => {
         if (!userInfo) navigation.navigate(variables.User);
-console.log('error run when navigate')
-        // const body = {
-        //     data: {
-        //       imageId: id,
-        //       userId: "1"
-        //     }
-        //   }
-        // await mutation.mutate(body);
-        // const credentials = await AsyncStorage.getItem('user_info');
-        // console.log(credentials, 'credentials')
+
+        const body = {
+            data: {
+              imageId: id,
+              userId: userInfo.id
+            }
+          }
+
+        if (likedUser) {
+            dislikeMutation.mutate(likedUser.id)
+        } else {
+            likeMutation.mutate(body);
+        }
     }
 
     const fetchUserInfo = useCallback(async () => {
-        const userInfo = await AsyncStorage.getItem('user_info');
-        setUserInfo(userInfo)
-        console.log(userInfo, 'userInfo')
+        const user = await AsyncStorage.getItem('user_info');
+        const parseUser = JSON.parse(user);
+        setLikedUser(_.find(likes.data, (item) => {
+            return item.attributes.userId.data.id == parseUser.id;
+        }))
+        setUserInfo(parseUser);
     }, [])
 
     useEffect(() => {
@@ -96,9 +111,10 @@ console.log('error run when navigate')
                     </Text>
                 </View>
                 <View style={styles.actionBar}>
-                    <Icon name="smile-o" size={20} onPress={actionLike}/>
-                    <Icon name="comment-o" size={20} onPress={() => setVisibleBottomSheet(true)}/>
-                    <Icon name="share-alt" size={20} onPress={() => navigation.navigate('User')}/>
+                    <Text onPress={actionLike} style={{ fontWeight: "700", color: likedUser ? `${color.blue}` : `${color.black}` }} >Haha</Text>
+                    <Text onPress={() => setVisibleBottomSheet(true)} style={{ fontWeight: "700" }} >Bình luận</Text>
+                    <Text style={{ fontWeight: "700" }} ></Text>
+                    {/* <Icon name="share-alt" size={20} onPress={() => navigation.navigate('User')}/> */}
                 </View>
             </View>
 
@@ -110,11 +126,14 @@ console.log('error run when navigate')
                     data={comments}
                     postId={id}
                     numberLikes={likes?.data.length}
+                    navigation={navigation}
                 />
             }
             
         </>
     )
 }
+
+// PostItem = () => <NetworkLogger />;
 
 export default PostItem;

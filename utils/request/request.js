@@ -1,7 +1,7 @@
 import axios from "axios"; 
 import { HOST } from "@env";
 
-const instance = axios.create({
+const request = axios.create({
   baseURL : `${HOST}api/`,
   headers: {
     // Authorization: `Bearer ${token}`,
@@ -11,7 +11,7 @@ const instance = axios.create({
   // .. other options
 });
 
-instance.interceptors.request.use((axiosConfig) => {
+request.interceptors.request.use((axiosConfig) => {
     axiosConfig.headers = {
       ...axiosConfig.headers,
       // Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjg5MTI2MDkwLCJleHAiOjE2OTE3MTgwOTB9.AqVXkxAU9w2M3uFMg04VSnoiLes_CKa5y6dXc5EQvYc`,
@@ -20,7 +20,7 @@ instance.interceptors.request.use((axiosConfig) => {
     return axiosConfig;
 });
   
-instance.interceptors.response.use(
+request.interceptors.response.use(
     (response) => response.data,
     (error) => {
       const { status } = error.response;
@@ -29,8 +29,6 @@ instance.interceptors.response.use(
         const {
           data: { message },
         } = error.response;
-  
-        toast.error(message);
       }
   
       return Promise.reject(error);
@@ -38,4 +36,4 @@ instance.interceptors.response.use(
   );
   
 
-export default instance;
+export default request;

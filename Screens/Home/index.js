@@ -93,23 +93,23 @@ let Home = (props) => {
       pageSize: 3,
     }
   })
-  
-  const [ allPages, setAllPages] = useState(0);
+
+  const [allPages, setAllPages] = useState(0);
 
   const { isLoading, isFetching, isSuccess, data, hasNextPage, fetchNextPage } = useInfiniteQuery(
     'images',
     async ({ pageParam = 1 }) => getImages(params, pageParam),
     {
       getNextPageParam: (lastPage) => {
-        return lastPage.pageParam < allPages 
-                ? lastPage.pageParam + 1 
-                : false;
+        return lastPage.pageParam < allPages
+          ? lastPage.pageParam + 1
+          : false;
       },
     }
   );
   const total = data?.pages[0].data.meta.pagination.total;
   const totalPage = Math.ceil(total / params.pagination.pageSize)
-console.log(data, 'data on home')
+  console.log(data, 'data on home')
   useEffect(() => {
     if (isSuccess) {
       setAllPages(totalPage)

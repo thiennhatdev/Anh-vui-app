@@ -17,7 +17,9 @@ const styles = StyleSheet.create({
         marginVertical: space.sp20,
         borderBottomWidth: 0.5,
         borderBottomColor: color.silver,
-        paddingBottom: space.sp10
+        paddingBottom: space.sp10,
+        fontSize: 16,
+        fontWeight: "700"
     }
 })
 
