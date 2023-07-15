@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TouchableOpacity, TouchableHighlight } from 'react-native'
+import { View, Text, FlatList, TouchableOpacity, TouchableHighlight, Alert } from 'react-native'
 import React, { useState } from 'react'
 import UserSelectFile from '../UserSelectFile';
 import PostItem from '../PostItem';
@@ -37,6 +37,22 @@ const ProfileOptions = ({ navigation }) => {
         if (route === variables.Logout) {
             await AsyncStorage.multiRemove(['user_info', 'token'])
             await GoogleSignin.signOut();
+            Alert.alert('', 'Đăng xuất thành công',
+                [
+                  {
+                    text: 'OK',
+                    // onPress: () => Alert.alert('Cancel Pressed'),
+                    style: 'cancel',
+                  },
+                ],
+                {
+                  cancelable: true,
+                  // onDismiss: () =>
+                  //   Alert.alert(
+                  //     'This alert was dismissed by tapping outside of the alert dialog.',
+                  //   ),
+                },
+              );
             navigation.navigate(variables.Home)
             return;
         }

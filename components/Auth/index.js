@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Alert } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,23 +14,14 @@ let Auth = (props) => {
 
   const _signIn = async () => {
     try {
-      // const data = await GoogleSignin.signOut();
-      // console.log(data, 'data signout')
-
       await GoogleSignin.hasPlayServices();
       await GoogleSignin.signIn();
       const { accessToken } = await GoogleSignin.getTokens();
-      console.log(accessToken, 'accessToken in login')
       const { jwt, user } = await loginGoogle(accessToken);
       await AsyncStorage.setItem('user_info', JSON.stringify(user));
       await AsyncStorage.setItem('token', jwt);
-      console.log('end AsyncStorage')
+      console.log(jwt, 'token iiiii')
       navigation.goBack();
-      // const { id } = user;
-      // console.log(jwt, user, 'user = jwt')
-      
-
-    //   this.setState({ userInfo: userInfo, loggedIn: true });
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
@@ -41,7 +32,26 @@ let Auth = (props) => {
       } else {
         // some other error happened
       }
-      console.log(error, error.code, 'error......')
+      console.log(error, error.code, 'erorr......')
+
+      Alert.alert(
+        'Lỗi',
+        'Đăng nhập không thành công',
+        [
+          {
+            text: 'Cancel',
+            // onPress: () => Alert.alert('Cancel Pressed'),
+            style: 'cancel',
+          },
+        ],
+        {
+          cancelable: true,
+          // onDismiss: () =>
+          //   Alert.alert(
+          //     'This alert was dismissed by tapping outside of the alert dialog.',
+          //   ),
+        },
+      );
     }
   };
 
@@ -58,7 +68,7 @@ let Auth = (props) => {
 
   return (
     <View style={styles.wrapAuth}>
-      <Text style={styles.loginText}>Đăng nhập nhanh để chia sẽ những bức ảnh hài hước </Text>
+      <Text style={styles.loginText}>Đăng nhập nhanh</Text>
         <GoogleSigninButton
             size={GoogleSigninButton.Size.Wide}
             color={GoogleSigninButton.Color.Dark}

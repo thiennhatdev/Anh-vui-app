@@ -5,5 +5,6 @@ export default {
     black: '#000',
     silver: '#bec6cf',
     lightSilver: '#eee',
-    blue: "#337ab7"
+    blue: "#337ab7",
+    red: "red"
 }
