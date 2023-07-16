@@ -1,33 +1,39 @@
 import { View, Text, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import DocumentPicker from 'react-native-document-picker'
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import styles from './style';
 import UploadImageModal from '../UploadImageModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import variables from '../../constants/variables';
+import { useIsFocused } from '@react-navigation/native';
 
 const UserSelectFile = (props) => {
   const { navigation } = props;
+  const focus = useIsFocused(); 
 
   const [isShowModal, setIsShowModal] = useState(false);
+  const [userInfo, setUserInfo] = useState(false);
 
-  const docPicker = async () => {
-    try {
-      let result = await DocumentPicker.pick({
-        allowMultiSelection: true
-      });
-      console.log(result, ' result');
-      // console.log(result);
-    } catch (err) {
-      console.log(err)
-      // if (DocumentPicker.isCancel(err)) {
-      //   console.log("error -----", err);
-      // } else {
-      //   throw err;
-      // }
+  const showModalUpload = () => {
+    if (!userInfo) {
+      navigation.navigate(variables.User);
+      return
     }
+    
+    setIsShowModal(true)
   }
+
+  const fetchUserInfo = useCallback(async () => {
+    const user = await AsyncStorage.getItem('user_info');
+    const parseUser = JSON.parse(user);
+    setUserInfo(parseUser);
+  }, [])
+
+  useEffect(() => {
+      fetchUserInfo();
+  }, [fetchUserInfo, focus])
 
   return (
     <>
@@ -38,7 +44,7 @@ const UserSelectFile = (props) => {
         <View style={styles.selectImage}>
           <TouchableOpacity
             // onPress={docPicker}
-            onPress={() => setIsShowModal(true)}
+            onPress={showModalUpload}
             style={styles.selectImageInner}
           >
             <Icon name={"file-image-o"} size={20} />
