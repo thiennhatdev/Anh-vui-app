@@ -15,6 +15,7 @@ import NetworkLogger from 'react-native-network-logger';
 
 import styles from './style';
 import { getImages } from '../../apis/image';
+import SkeletonPost from '../../components/Skeleton/SkeletonPost';
 
 const DATA = [
   {
@@ -122,6 +123,7 @@ let Home = (props) => {
       fetchNextPage();
     }
   };
+  console.log(isFetching, 'iseeeccccceeeeet')
 
   return (
     <View style={styles.wrapper}>
@@ -130,7 +132,9 @@ let Home = (props) => {
       <View style={styles.contentHome}>
         <FlatList
           data={data?.pages.map(page => page.data.data).flat()}
-          renderItem={({ item }) => <PostItem item={item} navigation={navigation} />}
+          renderItem={({ item }) => {
+            return isFetching ? <SkeletonPost /> : <PostItem item={item} navigation={navigation} />
+          }}
           keyExtractor={item => item.id}
           onEndReached={loadMore}
           onEndReachedThreshold={0.3}

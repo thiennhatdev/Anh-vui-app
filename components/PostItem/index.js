@@ -17,7 +17,7 @@ import color from '../../commons/variable/color';
 let PostItem = (props) => {
     const { navigation, item } = props;
     const { id, attributes: { description, createdAt, link, comments, likes, userId, path } } = item;
-    const [isLogined,  setIsLogined] = useState(false);
+    const [isLogined, setIsLogined] = useState(false);
     const [userInfo, setUserInfo] = useState(false);
 
     const [likedUser, setLikedUser] = useState(false);
@@ -35,7 +35,7 @@ let PostItem = (props) => {
 
     const desiredWidth = Dimensions.get('window').width;
     const uri = "https://znews-photo.zingcdn.me/w480/Uploaded/hointt/2023_02_22/44_zing_1_1.jpg";
-// console.log(item, 'item on detail')
+    // console.log(item, 'item on detail')
     const [desiredHeight, setDesiredHeight] = React.useState(0)
     const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
 
@@ -46,15 +46,15 @@ let PostItem = (props) => {
     const actionLike = async () => {
         if (!userInfo) {
             navigation.navigate(variables.User);
-            return;    
+            return;
         }
 
         const body = {
             data: {
-              imageId: id,
-              userId: userInfo.id
+                imageId: id,
+                userId: userInfo.id
             }
-          }
+        }
 
         if (likedUser) {
             dislikeMutation.mutate(likedUser.id)
@@ -77,18 +77,18 @@ let PostItem = (props) => {
     }, [fetchUserInfo])
 
     return (
-        <>
+        < >
             <View style={styles.postWrapper}>
                 <View style={styles.postAuthor}>
                     <Avatar />
                     <View style={styles.postAuthorRight}>
                         <Text style={styles.name}>{userId.data ? userId.data.attributes.username : 'Anonymous'}</Text>
-                        <Text style={styles.createdTime}>{ dayjs(createdAt).format('DD/MM/YYYY') }</Text>
+                        <Text style={styles.createdTime}>{dayjs(createdAt).format('DD/MM/YYYY')}</Text>
                     </View>
                 </View>
                 <View style={styles.postTitle}>
                     <Text style={styles.postTitleText}>
-                        { description }
+                        {description}
                     </Text>
                 </View>
                 <View>
@@ -106,11 +106,11 @@ let PostItem = (props) => {
                 </View>
                 <View style={styles.analytic}>
                     <View style={styles.analyticLike}>
-                        <Icon name="smile-o" size={20}/>
-                        <Text style={styles.number}>{ likes?.data?.length }</Text>
+                        <Icon name="smile-o" size={20} />
+                        <Text style={styles.number}>{likes?.data?.length}</Text>
                     </View>
                     <Text>
-                        { comments?.data?.length } bình luận
+                        {comments?.data?.length} bình luận
                     </Text>
                 </View>
                 <View style={styles.actionBar}>
@@ -122,7 +122,7 @@ let PostItem = (props) => {
             </View>
 
             {
-                visibleBottomSheet && 
+                visibleBottomSheet &&
                 <CommentBottomSheet
                     visibleBottomSheet={visibleBottomSheet}
                     onVisibleBottomSheet={() => setVisibleBottomSheet(!visibleBottomSheet)}
@@ -132,7 +132,7 @@ let PostItem = (props) => {
                     navigation={navigation}
                 />
             }
-            
+
         </>
     )
 }
