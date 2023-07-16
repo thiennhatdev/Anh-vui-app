@@ -1,7 +1,6 @@
 import { View, Text, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import DocumentPicker from 'react-native-document-picker'
 import PostItem from '../../components/PostItem';
 import {
   useQuery,
@@ -89,6 +88,7 @@ let Home = (props) => {
         }
       }
     },
+    sort: "createdAt:desc",
     pagination: {
       pageSize: 3,
     }
@@ -116,23 +116,6 @@ let Home = (props) => {
     }
   }, [isSuccess, totalPage]);
 
-  const docPicker = async () => {
-    try {
-      let result = await DocumentPicker.pick({
-        allowMultiSelection: true
-      });
-      console.log(result, ' result');
-      // console.log(result);
-    } catch (err) {
-      console.log(err)
-      // if (DocumentPicker.isCancel(err)) {
-      //   console.log("error -----", err);
-      // } else {
-      //   throw err;
-      // }
-    }
-  }
-
   const loadMore = () => {
     console.log(hasNextPage, 'hasNextPage..........')
     if (hasNextPage) {
@@ -143,7 +126,7 @@ let Home = (props) => {
   return (
     <View style={styles.wrapper}>
       {/* <ScrollView>  */}
-      <UserSelectFile />
+      <UserSelectFile navigation={navigation} />
       <View style={styles.contentHome}>
         <FlatList
           data={data?.pages.map(page => page.data.data).flat()}

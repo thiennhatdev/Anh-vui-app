@@ -1,8 +1,5 @@
-import { Keyboard, KeyboardAvoidingView, View, Text, TouchableOpacity, Alert, SafeAreaView, TextInput, FlatList, ScrollView, Image } from 'react-native'
+import { Keyboard, View, Text, TouchableOpacity, Alert, SafeAreaView, TextInput, FlatList, ScrollView, Image } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import CommentItem from '../CommentItem';
-import { useKeyboardHeight } from '../../hooks/getHeightKeyboard';
 
 import styles from './style'
 

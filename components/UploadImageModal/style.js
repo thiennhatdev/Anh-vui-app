@@ -55,7 +55,24 @@ const styles = StyleSheet.create({
     selectImageText: {
         marginTop: space.sp10
     },
+    previewImageWrap: {
+        alignItems: flex.center,
+        marginVertical: space.sp20
+    },
+    previewImageText: {
+        textAlign: flex.center,
+        marginBottom: space.sp10,
+        fontWeight: "700",
+        textDecorationLine: "underline"
+    },
+    previewImage: {
+        width: 200,
+        height: 100,
+        objectFit: 'contain'
+    },
     captionInput: {
+        textAlignVertical: "top",
+        padding: space.sp10,
         marginTop: space.sp10,
         borderRadius: space.sp5,
         padding: space.sp5,

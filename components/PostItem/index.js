@@ -16,7 +16,7 @@ import color from '../../commons/variable/color';
 
 let PostItem = (props) => {
     const { navigation, item } = props;
-    const { id, attributes: { description, createdAt, link, comments, likes, userId } } = item;
+    const { id, attributes: { description, createdAt, link, comments, likes, userId, path } } = item;
     const [isLogined,  setIsLogined] = useState(false);
     const [userInfo, setUserInfo] = useState(false);
 
@@ -44,7 +44,10 @@ let PostItem = (props) => {
     })
 
     const actionLike = async () => {
-        if (!userInfo) navigation.navigate(variables.User);
+        if (!userInfo) {
+            navigation.navigate(variables.User);
+            return;    
+        }
 
         const body = {
             data: {
@@ -97,7 +100,7 @@ let PostItem = (props) => {
                         }}
                         // style={styles.postImage}
                         source={{
-                            uri: (link.data && link.data[0].attributes.url) || uri
+                            uri: (link.data && link.data[0].attributes.url) || path
                         }}
                     />
                 </View>

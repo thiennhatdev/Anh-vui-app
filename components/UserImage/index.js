@@ -1,7 +1,5 @@
-import { View, Text, FlatList, TouchableOpacity } from 'react-native'
+import { View, Text, FlatList } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
-import Icon from 'react-native-vector-icons/FontAwesome';
-import color from '../../commons/variable/color';
 import UserSelectFile from '../UserSelectFile';
 import PostItem from '../PostItem';
 import ProfileLayout from '../../layouts/ProfileLayout/index.js';
@@ -96,7 +94,7 @@ let UserImage = (props) => {
   return (
     <ProfileLayout navigation={navigation}>
       <View style={styles.contentUserImage}>
-        <UserSelectFile />
+        <UserSelectFile navigation={navigation} />
         <View style={styles.imagesOfUser}>
           <FlatList
             data={data?.pages.map(page => page.data.data).flat()}

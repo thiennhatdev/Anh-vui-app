@@ -35,18 +35,18 @@ import color from './commons/variable/color';
 
 // startNetworkLogging();
 
-const Stack = createNativeStackNavigator();
+// const Stack = createNativeStackNavigator();
 // const Tab = createBottomTabNavigator();
 const Tab = createMaterialTopTabNavigator();
 
-const CategoryStackScreen = () => {
-  return(
-    <Stack.Navigator initialRouteName="ListCategory">
-      <Stack.Screen name="ListCategory" component={ListCategory} options={{ title: 'Danh sách category' }} />
-      <Stack.Screen name="ListCategory" component={DetailCategory} options={{ title: 'Chi tiết danh mục' }} />
-    </Stack.Navigator>
-  )
-}
+// const CategoryStackScreen = () => {
+//   return(
+//     <Stack.Navigator initialRouteName="ListCategory">
+//       <Stack.Screen name="ListCategory" component={ListCategory} options={{ title: 'Danh sách category' }} />
+//       <Stack.Screen name="ListCategory" component={DetailCategory} options={{ title: 'Chi tiết danh mục' }} />
+//     </Stack.Navigator>
+//   )
+// }
 
 const queryClient = new QueryClient();
 
