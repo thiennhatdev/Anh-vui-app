@@ -4,6 +4,7 @@ import UserSelectFile from '../UserSelectFile';
 import PostItem from '../PostItem';
 import ProfileLayout from '../../layouts/ProfileLayout/index.js';
 import NetworkLogger from 'react-native-network-logger';
+import SkeletonPost from '../../components/Skeleton/SkeletonPost';
 
 import styles from './style';
 import { getImages } from '../../apis/image';
@@ -98,7 +99,9 @@ let UserImage = (props) => {
         <View style={styles.imagesOfUser}>
           <FlatList
             data={data?.pages.map(page => page.data.data).flat()}
-            renderItem={({ item }) => <PostItem item={item} navigation={navigation} />}
+            renderItem={({ item }) => {
+              return isFetching || isLoading ? <SkeletonPost /> : <PostItem item={item} navigation={navigation} />
+            }}
             keyExtractor={item => item.id}
             onEndReached={loadMore}
             onEndReachedThreshold={0.3}

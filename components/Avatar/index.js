@@ -4,14 +4,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import styles from './style'
 
 const Avatar = (props) => {
-    const isAvatar = false;
-    // const isAvatar = "https://znews-photo.zingcdn.me/w480/Uploaded/hointt/2023_02_22/44_zing_1_1.jpg";
-
+    const { photo } = props;
     return (
         <View style={styles.wrapAvatar}>
             {
-                isAvatar
-                    ? <Image source={{ uri: isAvatar }} style={styles.imageAvatar}/>
+                photo
+                    ? <Image source={{ uri: photo }} style={styles.imageAvatar}/>
                     : <Text style={styles.textAvatar}>AD</Text>
             }
         </View>

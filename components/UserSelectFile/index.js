@@ -8,6 +8,7 @@ import UploadImageModal from '../UploadImageModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import variables from '../../constants/variables';
 import { useIsFocused } from '@react-navigation/native';
+import Avatar from '../Avatar';
 
 const UserSelectFile = (props) => {
   const { navigation } = props;
@@ -39,7 +40,8 @@ const UserSelectFile = (props) => {
     <>
     <View style={styles.wrapSelectFile}>
         <View style={styles.avatar}>
-          <Ionicons name={"person-circle-outline"} size={30} />
+          <Avatar photo={userInfo?.photo} />
+          {/* <Ionicons name={"person-circle-outline"} size={30} /> */}
         </View>
         <View style={styles.selectImage}>
           <TouchableOpacity
