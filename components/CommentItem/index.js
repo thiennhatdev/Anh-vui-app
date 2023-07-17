@@ -57,7 +57,7 @@ const CommentItem = (props) => {
         const parseUser = JSON.parse(user);
         console.log(likes, 'likes...///.111...')
         setLikedUser(_.find(likes?.data, (item) => {
-            return item?.attributes.userId?.data.id == parseUser.id;
+            return item?.attributes.userId?.data.id == parseUser?.id;
         }))
         setUserInfo(parseUser);
     }, [])

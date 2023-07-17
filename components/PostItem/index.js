@@ -5,6 +5,7 @@ import CommentBottomSheet from '../CommentBottomSheet';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from "@react-navigation/native"; 
 
 import styles from './style'
 import Avatar from '../Avatar';
@@ -16,11 +17,13 @@ import color from '../../commons/variable/color';
 
 let PostItem = (props) => {
     const { navigation, item } = props;
+    const focus = useIsFocused(); 
     const { id, attributes: { description, createdAt, link, comments, likes, userId, path } } = item;
-    const [isLogined, setIsLogined] = useState(false);
-    const [userInfo, setUserInfo] = useState(false);
+    const imageUrl = (link.data && link.data[0].attributes.url) || path;
 
+    const [userInfo, setUserInfo] = useState(false);
     const [likedUser, setLikedUser] = useState(false);
+    const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
 
     const likeMutation = useMutation((data) => like(data), {
         onSuccess: async (data) => {
@@ -34,12 +37,9 @@ let PostItem = (props) => {
     });
 
     const desiredWidth = Dimensions.get('window').width;
-    const uri = "https://znews-photo.zingcdn.me/w480/Uploaded/hointt/2023_02_22/44_zing_1_1.jpg";
-    // console.log(item, 'item on detail')
-    const [desiredHeight, setDesiredHeight] = React.useState(0)
-    const [visibleBottomSheet, setVisibleBottomSheet] = useState(false);
+    const [desiredHeight, setDesiredHeight] = useState(0)
 
-    Image.getSize(uri, (width, height) => {
+    Image.getSize(imageUrl, (width, height) => {
         setDesiredHeight(desiredWidth / width * height)
     })
 
@@ -67,22 +67,22 @@ let PostItem = (props) => {
         const user = await AsyncStorage.getItem('user_info');
         const parseUser = JSON.parse(user);
         setLikedUser(_.find(likes.data, (item) => {
-            return item.attributes.userId.data.id == parseUser.id;
+            return item.attributes.userId.data.id == parseUser?.id;
         }))
         setUserInfo(parseUser);
     }, [])
 
     useEffect(() => {
         fetchUserInfo();
-    }, [fetchUserInfo])
+    }, [fetchUserInfo, focus])
 
     return (
         < >
             <View style={styles.postWrapper}>
                 <View style={styles.postAuthor}>
-                    <Avatar />
+                    <Avatar photo={userId.data?.attributes.photo} />
                     <View style={styles.postAuthorRight}>
-                        <Text style={styles.name}>{userId.data ? userId.data.attributes.username : 'Anonymous'}</Text>
+                        <Text style={styles.name}>{userId.data ? userId.data?.attributes.username : 'Anonymous'}</Text>
                         <Text style={styles.createdTime}>{dayjs(createdAt).format('DD/MM/YYYY')}</Text>
                     </View>
                 </View>
@@ -100,7 +100,7 @@ let PostItem = (props) => {
                         }}
                         // style={styles.postImage}
                         source={{
-                            uri: (link.data && link.data[0].attributes.url) || path
+                            uri: imageUrl
                         }}
                     />
                 </View>

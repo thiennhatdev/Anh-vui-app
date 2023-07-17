@@ -133,7 +133,7 @@ let Home = (props) => {
         <FlatList
           data={data?.pages.map(page => page.data.data).flat()}
           renderItem={({ item }) => {
-            return isFetching ? <SkeletonPost /> : <PostItem item={item} navigation={navigation} />
+            return isFetching || isLoading ? <SkeletonPost /> : <PostItem item={item} navigation={navigation} />
           }}
           keyExtractor={item => item.id}
           onEndReached={loadMore}

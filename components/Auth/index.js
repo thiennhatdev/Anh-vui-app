@@ -7,6 +7,7 @@ import styles from './style'
 import { loginGoogle } from '../../apis/auth';
 
 import NetworkLogger from 'react-native-network-logger';
+import { updateProfile } from '../../apis/user';
 
 let Auth = (props) => {
   const { navigation } = props;
@@ -15,12 +16,19 @@ let Auth = (props) => {
   const _signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      await GoogleSignin.signIn();
+      const data = await GoogleSignin.signIn();
       const { accessToken } = await GoogleSignin.getTokens();
       const { jwt, user } = await loginGoogle(accessToken);
       await AsyncStorage.setItem('user_info', JSON.stringify(user));
       await AsyncStorage.setItem('token', jwt);
-      console.log(jwt, 'token iiiii')
+      const { user: { photo, name } } = data;
+
+      const res = await updateProfile({
+        photo,
+        username: name
+      },
+      )
+      
       navigation.goBack();
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -32,11 +40,10 @@ let Auth = (props) => {
       } else {
         // some other error happened
       }
-      console.log(error, error.code, 'erorr......')
 
       Alert.alert(
         'Lỗi',
-        'Đăng nhập không thành công',
+        error?.message,
         [
           {
             text: 'Cancel',
@@ -59,7 +66,7 @@ let Auth = (props) => {
 
     useEffect(() => {
         GoogleSignin.configure({
-            // scopes: ['email', 'profile','https://www.googleapis.com/auth/drive.readonly'], 
+            scopes: ['email', 'profile'], 
             webClientId: '519004758708-jas2cd85cuav7u4hvc16f6b20pqhfj33.apps.googleusercontent.com', 
             offlineAccess: true, 
             
