@@ -13,17 +13,14 @@ const User = (props) => {
   const focus = useIsFocused(); 
 
   const [userInfo, setUserInfo] = useState(false);
-  console.log('ffffff111')
 
   const fetchUserInfo = useCallback(async () => {
     const userInfo = await AsyncStorage.getItem('user_info');
     setUserInfo(userInfo)
-    console.log(userInfo, 'userInfo profile')
   }, [])
 
   useEffect(() => {
     fetchUserInfo();
-    console.log('ffffff2222')
   }, [fetchUserInfo, focus])
 
 

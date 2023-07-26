@@ -75,7 +75,6 @@ let UploadImageModal = ({ isShowModal, toggle }) => {
             });
             setImageSelected(data.assets[0]);
         } catch (err) {
-            console.log(err, 'errrrrrr')
         }
     }
 

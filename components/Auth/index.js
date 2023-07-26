@@ -19,6 +19,7 @@ let Auth = (props) => {
       const data = await GoogleSignin.signIn();
       const { accessToken } = await GoogleSignin.getTokens();
       const { jwt, user } = await loginGoogle(accessToken);
+      console.log(jwt, 'jwt')
       await AsyncStorage.setItem('user_info', JSON.stringify(user));
       await AsyncStorage.setItem('token', jwt);
       const { user: { photo, name } } = data;

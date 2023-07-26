@@ -14,12 +14,14 @@ import { dislike, like } from '../../apis/likes';
 import variables from '../../constants/variables';
 import NetworkLogger from 'react-native-network-logger';
 import color from '../../commons/variable/color';
+import { socket } from '../../hooks/socket';
 
 let PostItem = (props) => {
+    
     const { navigation, item } = props;
     const focus = useIsFocused(); 
     const { id, attributes: { description, createdAt, link, comments, likes, userId, path } } = item;
-    const imageUrl = (link.data && link.data[0].attributes.url) || path;
+    const imageUrl = (link?.data && link.data[0].attributes.url) || path;
 
     const [userInfo, setUserInfo] = useState(false);
     const [likedUser, setLikedUser] = useState(false);
@@ -27,7 +29,18 @@ let PostItem = (props) => {
 
     const likeMutation = useMutation((data) => like(data), {
         onSuccess: async (data) => {
-            setLikedUser(data.data)
+            setLikedUser(data.data);
+            if (userInfo.id !== userId.data.id) {
+                socket.emit('like', { 
+                    content: `${userInfo.username} đã thích ảnh của bạn`, 
+                    isRead: false, 
+                    fromUserId: userInfo.id ,
+                    toUserId: userId.data.id ,
+                    imageId: id,
+                    publishedAt: dayjs()
+                })
+
+            }
         },
     });
     const dislikeMutation = useMutation((id) => dislike(id), {
@@ -42,7 +55,9 @@ let PostItem = (props) => {
     Image.getSize(imageUrl, (width, height) => {
         setDesiredHeight(desiredWidth / width * height)
     })
-
+   
+    
+    
     const actionLike = async () => {
         if (!userInfo) {
             navigation.navigate(variables.User);
@@ -72,17 +87,20 @@ let PostItem = (props) => {
         setUserInfo(parseUser);
     }, [])
 
-    useEffect(() => {
+    useEffect( () => {
         fetchUserInfo();
     }, [fetchUserInfo, focus])
+
+    useEffect( () => {
+    }, [])
 
     return (
         < >
             <View style={styles.postWrapper}>
                 <View style={styles.postAuthor}>
-                    <Avatar photo={userId.data?.attributes.photo} />
+                    <Avatar photo={userId?.data?.attributes.photo} />
                     <View style={styles.postAuthorRight}>
-                        <Text style={styles.name}>{userId.data ? userId.data?.attributes.username : 'Anonymous'}</Text>
+                        <Text style={styles.name}>{userId?.data ? userId.data?.attributes.username : 'Anonymous'}</Text>
                         <Text style={styles.createdTime}>{dayjs(createdAt).format('DD/MM/YYYY')}</Text>
                     </View>
                 </View>
@@ -115,7 +133,11 @@ let PostItem = (props) => {
                 </View>
                 <View style={styles.actionBar}>
                     <Text onPress={actionLike} style={{ fontWeight: "700", color: likedUser ? `${color.blue}` : `${color.black}` }} >Haha</Text>
-                    <Text onPress={() => setVisibleBottomSheet(true)} style={{ fontWeight: "700" }} >Bình luận</Text>
+                    <Text onPress={() => {
+                            setVisibleBottomSheet(true)
+                        }} 
+                        style={{ fontWeight: "700" }} 
+                    >Bình luận</Text>
                     <Text style={{ fontWeight: "700" }} ></Text>
                     {/* <Icon name="share-alt" size={20} onPress={() => navigation.navigate('User')}/> */}
                 </View>
@@ -125,9 +147,12 @@ let PostItem = (props) => {
                 visibleBottomSheet &&
                 <CommentBottomSheet
                     visibleBottomSheet={visibleBottomSheet}
-                    onVisibleBottomSheet={() => setVisibleBottomSheet(!visibleBottomSheet)}
+                    onVisibleBottomSheet={() => {
+                        setVisibleBottomSheet(!visibleBottomSheet)
+                    }}
                     data={comments}
                     postId={id}
+                    userId={userId}
                     numberLikes={likes?.data.length}
                     navigation={navigation}
                 />
@@ -138,5 +163,4 @@ let PostItem = (props) => {
 }
 
 // PostItem = () => <NetworkLogger />;
-
 export default PostItem;

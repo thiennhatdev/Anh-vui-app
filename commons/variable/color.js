@@ -7,5 +7,6 @@ export default {
     lightSilver: '#eee',
     skeleton: "#cccccc73",
     blue: "#337ab7",
-    red: "red"
+    lightBlue: "#e6f2fd",
+    red: "#e72d2d"
 }
