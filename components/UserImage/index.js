@@ -5,11 +5,11 @@ import PostItem from '../PostItem';
 import ProfileLayout from '../../layouts/ProfileLayout/index.js';
 import NetworkLogger from 'react-native-network-logger';
 import SkeletonPost from '../../components/Skeleton/SkeletonPost';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import styles from './style';
 import { getImages } from '../../apis/image';
 import { useInfiniteQuery } from 'react-query';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 let UserImage = (props) => {
@@ -51,7 +51,16 @@ let UserImage = (props) => {
 
   const { isLoading, isFetching, isSuccess, data, hasNextPage, fetchNextPage } = useInfiniteQuery(
     ['imagesOfUser', params],
-    async ({ pageParam = 1 }) => getImages(params, pageParam),
+    async ({ pageParam = 1 }) => {
+      const userId = await AsyncStorage.getItem("user_info");
+      const parseUser = JSON.parse(userId);
+      return getImages({
+        ...params,
+        filters: {
+          userId: parseUser.id
+        },
+      }, pageParam)
+    },
     {
       getNextPageParam: (lastPage) => {
         return lastPage.pageParam < allPages

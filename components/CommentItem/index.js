@@ -11,19 +11,30 @@ import { dislike, like } from '../../apis/likes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import variables from '../../constants/variables';
 import color from '../../commons/variable/color';
+import { socket } from '../../hooks/socket';
 
 const CommentItem = (props) => {
     const { navigation, item, showInputReply } = props;
     const { id, attributes } = item;
-    const { content, createdAt, likes } = attributes || {};
+    const { content, createdAt, likes, userId } = attributes || {};
 
     const [userInfo, setUserInfo] = useState(false);
     const [likedUser, setLikedUser] = useState(false);
 
-
-    const likeMutation = useMutation((data) => like(data), {
+    const likeMutation = useMutation((body) => like(body), {
         onSuccess: async (data) => {
-            setLikedUser(data.data)
+            setLikedUser(data?.data);
+            if (userInfo.id !== userId.data.id) {
+                socket.emit('like', { 
+                    content: `${userInfo.username} đã thích bình luận của bạn`, 
+                    isRead: false, 
+                    fromUserId: userInfo.id ,
+                    toUserId: userId.data.id ,
+                    commentId: id,
+                    publishedAt: dayjs()
+                })
+
+            }
         },
     });
     const dislikeMutation = useMutation((id) => dislike(id), {
@@ -55,7 +66,6 @@ const CommentItem = (props) => {
     const fetchUserInfo = useCallback(async () => {
         const user = await AsyncStorage.getItem('user_info');
         const parseUser = JSON.parse(user);
-        console.log(likes, 'likes...///.111...')
         setLikedUser(_.find(likes?.data, (item) => {
             return item?.attributes.userId?.data.id == parseUser?.id;
         }))
@@ -68,16 +78,15 @@ const CommentItem = (props) => {
 
     return (
         <View style={styles.commentItem}>
-            {/* <Icon name="user-circle" size={20}/> */}
-            <Avatar />
+            <Avatar photo={userId?.data.attributes.photo} />
             <View style={styles.commentItemRight}>
                 <View style={styles.commentItemContent}>
                     <Text>{content}</Text>
                 </View>
                 <View style={styles.commentItemBottom}>
                     <View style={styles.commentItemBottomLeft}>
-                        <Text onPress={actionLike} style={[styles.likeText, { fontWeight: "700", color: likedUser ? `${color.blue}` : `${color.black}` }]}>Haha</Text>
-                        <Text style={styles.replyText} onPress={() => showInputReply(id)}>Phản hồi</Text>
+                        <Text onPress={actionLike} style={[styles.likeText, { color: likedUser ? `${color.blue}` : `${color.black}` }]}>Haha</Text>
+                        <Text style={styles.replyText} onPress={() => showInputReply(id, userId)}>Phản hồi</Text>
                     </View>
                     <View style={styles.commentItemBottomRight}>
                         <Text style={styles.replyTime}>{dayjs(createdAt).format('DD/MM/YYYY')}</Text>

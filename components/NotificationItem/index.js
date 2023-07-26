@@ -1,18 +1,20 @@
 import { View, Text, TouchableOpacity, Dimensions, Alert, Image } from 'react-native'
 import React, { useState } from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import dayjs from 'dayjs';
+import Avatar from '../Avatar';
+import color from '../../commons/variable/color';
 
 import styles from './style'
 
 const NotificationItem = (props) => {
-    const { } = props;
-
+    const { item } = props;
+    const { id, attributes: { createdAt, content, fromUserId, isRead } } = item || {};
     return (
-        <View style={styles.notificationItem}>
-            <Icon name="user-circle" size={20}/>
+        <View style={[styles.notificationItem, {backgroundColor: !isRead ? color.lightBlue : color.white}]}>
+            <Avatar photo={fromUserId.data.attributes.photo} />
             <View style={styles.notificationItemRight}>
-                <Text>Nội dung thông báo tttttttttttttttttttttttttttttttttttttt sdfsdf sdf </Text>
-                <Text style={styles.notificationTime}>05/07/2023</Text>
+                <Text style={styles.notificationContent}>{content}</Text>
+                <Text style={styles.notificationTime}>{dayjs(createdAt).format('HH:mm DD/MM/YYYY')}</Text>
             </View>
         </View>
     )

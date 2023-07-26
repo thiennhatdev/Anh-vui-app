@@ -13,11 +13,13 @@ import { useInfiniteQuery, useMutation, useQueryClient } from 'react-query';
 import space from '../../commons/variable/space';
 import color from '../../commons/variable/color';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { socket } from '../../hooks/socket';
+import dayjs from 'dayjs';
 
 
 
 const CommentBottomSheet = (props) => {
-    const { navigation, visibleBottomSheet, onVisibleBottomSheet, numberLikes, postId } = props;
+    const { navigation, visibleBottomSheet, onVisibleBottomSheet, numberLikes, postId, userId } = props;
 
     const keyboardHeight = useKeyboardHeight();
     const inputRef = useRef();
@@ -27,6 +29,7 @@ const CommentBottomSheet = (props) => {
 
     const [userInfo, setUserInfo] = useState(false);
     const [allPages, setAllPages] = useState(0);
+    const [imageAndCmtOfUser, setImageAndCmtOfUser] = useState(userId)
     const [objTarget, setObjTarget] = useState({ imageId: postId })
     const [keyboardAvoiding, setKeyboardAvoiding] = useState(false)
     const [params, setParams] = useState({
@@ -34,12 +37,24 @@ const CommentBottomSheet = (props) => {
             imageId: postId
         },
         populate: {
+            userId: {
+                populate: "*"
+            },
+            imageId: {
+                populate: "*"
+            },
+            commentId: {
+                populate: "*"
+            },
             likes: {
                 populate: "*"
             },
             comments: {
                 populate: {
                     likes: {
+                        populate: "*"
+                    },
+                    userId: {
                         populate: "*"
                     }
                 }
@@ -56,15 +71,29 @@ const CommentBottomSheet = (props) => {
         async ({ pageParam = 1 }) => getComments(params, pageParam),
         {
             getNextPageParam: (lastPage) => {
-                console.log(lastPage, allPages, 'allPages + lastPage')
                 return lastPage.pageParam < allPages
                     ? lastPage.pageParam + 1
                     : false;
             },
         }
     );
+
     const mutation = useMutation((data) => comment(data), {
         onSuccess: async (newPost) => {
+            if (userInfo.id !== imageAndCmtOfUser.data.id) {
+                socket.emit('like', { 
+                    content: objTarget.imageId
+                                ? `${userInfo.username} đã bình luận về ảnh của bạn`
+                                : `${userInfo.username} đã phản hồi bình luận của bạn`, 
+                    isRead: false, 
+                    fromUserId: userInfo.id ,
+                    toUserId: imageAndCmtOfUser.data.id ,
+                    publishedAt: dayjs(),
+                    ...objTarget
+                    
+                })
+
+            }
             await queryClient.prefetchInfiniteQuery(
                 ['commentsOfPost'],
                 async ({ pageParam = 1 }) => getComments(params, pageParam),)
@@ -77,15 +106,16 @@ const CommentBottomSheet = (props) => {
     const toggleBottomNavigationView = () => {
         onVisibleBottomSheet();
     };
-    const showInputReply = (idComment) => {
+
+    const showInputReply = (idComment, userId) => {
         inputRef.current.focus();
+        setImageAndCmtOfUser(userId)
         setObjTarget({
             commentId: idComment
         })
     }
 
     const loadMore = () => {
-        console.log(hasNextPage, 'hasNextPage on cmt bottom sheet..........')
         if (hasNextPage) {
             fetchNextPage();
         }
@@ -107,7 +137,6 @@ const CommentBottomSheet = (props) => {
     }
 
     useEffect(() => {
-        console.log(totalPage, isSuccess, 'isSuccess ..... next page')
         if (isSuccess) {
             setAllPages(totalPage)
         }
@@ -187,9 +216,12 @@ const CommentBottomSheet = (props) => {
                             }}
                             placeholder="Bình luận"
                             onFocus={() => setKeyboardAvoiding(true)}
-                            onBlur={() => setObjTarget({
-                                imageId: postId
-                            })}
+                            onBlur={() => {
+                                setImageAndCmtOfUser(userId)
+                                setObjTarget({
+                                    imageId: postId
+                                })
+                            }}
                             onSubmitEditing={onComment}
                         />
                         <TouchableOpacity onPress={onComment} style={styles.sendIcon}>

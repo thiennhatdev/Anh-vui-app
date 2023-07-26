@@ -1,5 +1,5 @@
-import { View, Text, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { View, Text, Image, TouchableOpacity, FlatList, ScrollView, SafeAreaView, LogBox } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import PostItem from '../../components/PostItem';
 import {
@@ -17,54 +17,9 @@ import styles from './style';
 import { getImages } from '../../apis/image';
 import SkeletonPost from '../../components/Skeleton/SkeletonPost';
 
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53aohbb28ba',
-    item: {
-      url: "ffff",
-      user: {
-        name: 'nhat',
-        avatar: 'sdfsdfsd'
-      }
-    },
-  },
-  {
-    id: 'bd7acdbea-c1b1-46c2-ased5-3ad53aohbb28ba',
-    item: {
-      url: "ffff",
-      user: {
-        name: 'nhat',
-        avatar: 'sdfsdfsd'
-      }
-    },
-  },
-  {
-    id: 'bd7dacbea-c1b1-46c2-aed5-3ad53aohbb28ba',
-    item: {
-      url: "ffff",
-      user: {
-        name: 'nhat',
-        avatar: 'sdfsdfsd'
-      }
-    },
-  },
-  {
-    id: 'bd7dacbea-c1b1-46c2-aed5-3ad53agohbb28ba',
-    item: {
-      url: "ffff",
-      user: {
-        name: 'nhat',
-        avatar: 'sdfsdfsd'
-      }
-    },
-  },
-
-];
-
-
-
 let Home = (props) => {
   const { navigation } = props;
+
   const [params, setParams] = useState({
     populate: {
       userId: {
@@ -77,6 +32,7 @@ let Home = (props) => {
         populate: "*"
       },
       comments: {
+        // populate: "*"
         populate: {
           comments: {
             populate: {
@@ -91,7 +47,7 @@ let Home = (props) => {
     },
     sort: "createdAt:desc",
     pagination: {
-      pageSize: 3,
+      pageSize: 10,
     }
   })
 
@@ -110,7 +66,7 @@ let Home = (props) => {
   );
   const total = data?.pages[0].data.meta.pagination.total;
   const totalPage = Math.ceil(total / params.pagination.pageSize)
-  console.log(data, 'data on home')
+ 
   useEffect(() => {
     if (isSuccess) {
       setAllPages(totalPage)
@@ -123,25 +79,22 @@ let Home = (props) => {
       fetchNextPage();
     }
   };
-  console.log(isFetching, 'iseeeccccceeeeet')
 
   return (
-    <View style={styles.wrapper}>
-      {/* <ScrollView>  */}
-      <UserSelectFile navigation={navigation} />
-      <View style={styles.contentHome}>
-        <FlatList
-          data={data?.pages.map(page => page.data.data).flat()}
-          renderItem={({ item }) => {
-            return isFetching || isLoading ? <SkeletonPost /> : <PostItem item={item} navigation={navigation} />
-          }}
-          keyExtractor={item => item.id}
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.3}
-        />
-      </View>
-      {/* </ScrollView> */}
-    </View>
+    <SafeAreaView style={styles.wrapper}>
+        <View style={styles.contentHome}>
+          <FlatList
+            data={data?.pages.map(page => page.data.data).flat()}
+            renderItem={({ item }) => {
+              return isFetching || isLoading ? <SkeletonPost /> : <PostItem item={item} navigation={navigation} />
+            }}
+            keyExtractor={item => item.id}
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.3}
+            ListHeaderComponent={<UserSelectFile navigation={navigation} />}
+          />
+        </View>
+    </SafeAreaView>
   )
 }
 

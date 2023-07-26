@@ -4,14 +4,30 @@ import flex from "../../commons/variable/flex";
 import space from "../../commons/variable/space";
 
 const styles = StyleSheet.create({
+    loadingWrap: {
+        flex: 1,
+        flexDirection: flex.row,
+        justifyContent: flex.center,
+        alignItems: flex.center
+    },
     notificationWrap: {
         flex: 1,
         backgroundColor: color.white
     },
-    loadMore: {
-        textAlign: flex.center,
-        paddingVertical: space.sp10,
-        color: color.blue
+    emptyNotification: {
+        flexDirection: flex.row,
+        flex: 1,
+        justifyContent: flex.center,
+        alignItems: flex.center,
+    },
+    notiIcon: {
+        fontSize: 27,
+        color: color.red
+    },
+    emptyText: {
+        fontSize: 20,
+        marginLeft: space.sp5,
+        color: color.red
     }
 })
 

@@ -7,14 +7,17 @@ const styles = StyleSheet.create({
     notificationItem: {
         padding: space.sp10,
         flexDirection: flex.row,
-        marginBottom: space.sp5
+        marginBottom: space.sp5,
     },
     notificationItemRight: {
         marginLeft: space.sp10
     },
+    notificationContent: {
+        color: color.black
+    },
     notificationTime: {
         marginTop: space.sp10,
-        color: color.silver
+        color: color.black
     }
 })
 

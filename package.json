@@ -37,6 +37,7 @@
     "react-native-skeleton-placeholder": "^5.2.4",
     "react-native-vector-icons": "^9.2.0",
     "react-query": "^3.39.3",
+    "socket.io-client": "^4.7.1",
     "yup": "^1.2.0"
   },
   "devDependencies": {

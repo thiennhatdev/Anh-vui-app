@@ -32,6 +32,9 @@ const styles = StyleSheet.create({
     likeText: {
         marginRight: space.sp10
     },
+    replyText: {
+        color: color.black
+    },
     replyTime: {
         marginRight: space.sp10
     },
