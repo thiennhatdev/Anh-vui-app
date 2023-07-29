@@ -1,10 +1,10 @@
-import { View, Text, TouchableOpacity, Dimensions, Alert, Image } from 'react-native'
-import React, { useState } from 'react';
 import dayjs from 'dayjs';
-import Avatar from '../Avatar';
+import React from 'react';
+import { Text, View } from 'react-native';
 import color from '../../commons/variable/color';
+import Avatar from '../Avatar';
 
-import styles from './style'
+import styles from './style';
 
 const NotificationItem = (props) => {
     const { item } = props;

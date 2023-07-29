@@ -28,7 +28,9 @@ const styles = StyleSheet.create({
         
     },
     postTitleText: {
-        fontSize: fontSize.f20
+        fontSize: fontSize.f20,
+        color: color.black,
+        marginBottom: space.sp15
     },
     postImage: {
         aspectRatio: 1 ,

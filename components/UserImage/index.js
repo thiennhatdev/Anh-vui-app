@@ -1,15 +1,14 @@
-import { View, Text, FlatList } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
-import UserSelectFile from '../UserSelectFile';
-import PostItem from '../PostItem';
-import ProfileLayout from '../../layouts/ProfileLayout/index.js';
-import NetworkLogger from 'react-native-network-logger';
-import SkeletonPost from '../../components/Skeleton/SkeletonPost';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FlatList, View } from 'react-native';
+import SkeletonPost from '../../components/Skeleton/SkeletonPost';
+import ProfileLayout from '../../layouts/ProfileLayout/index.js';
+import PostItem from '../PostItem';
+import UserSelectFile from '../UserSelectFile';
 
-import styles from './style';
-import { getImages } from '../../apis/image';
 import { useInfiniteQuery } from 'react-query';
+import { getImages } from '../../apis/image';
+import styles from './style';
 
 
 let UserImage = (props) => {

@@ -1,16 +1,18 @@
-import { View, Text, Alert } from 'react-native'
-import React, { useState, useEffect } from 'react'
-import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
+import React, { useContext, useEffect, useState } from 'react';
+import { Alert, Text, View } from 'react-native';
 
-import styles from './style'
 import { loginGoogle } from '../../apis/auth';
+import styles from './style';
 
-import NetworkLogger from 'react-native-network-logger';
+import { AppContext } from '../../App';
 import { updateProfile } from '../../apis/user';
 
 let Auth = (props) => {
   const { navigation } = props;
+  const { userAfterLogin, setUserAfterLogin } = useContext(AppContext);
+
   const [ isSigninInProgress, setIsSigninInProgress ] = useState(false);
 
   const _signIn = async () => {
@@ -19,10 +21,12 @@ let Auth = (props) => {
       const data = await GoogleSignin.signIn();
       const { accessToken } = await GoogleSignin.getTokens();
       const { jwt, user } = await loginGoogle(accessToken);
-      console.log(jwt, 'jwt')
+      // console.log(jwt, 'jwt')
       await AsyncStorage.setItem('user_info', JSON.stringify(user));
       await AsyncStorage.setItem('token', jwt);
       const { user: { photo, name } } = data;
+
+      setUserAfterLogin(JSON.stringify(user))
 
       const res = await updateProfile({
         photo,

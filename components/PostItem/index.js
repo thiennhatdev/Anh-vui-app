@@ -1,20 +1,19 @@
-import { View, Text, TouchableOpacity, Dimensions, Alert, Image } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import CommentBottomSheet from '../CommentBottomSheet';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from "@react-navigation/native";
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIsFocused } from "@react-navigation/native"; 
+import React, { useCallback, useEffect, useState } from 'react';
+import { Dimensions, Image, Text, TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import CommentBottomSheet from '../CommentBottomSheet';
 
-import styles from './style'
-import Avatar from '../Avatar';
 import { useMutation } from 'react-query';
 import { dislike, like } from '../../apis/likes';
-import variables from '../../constants/variables';
-import NetworkLogger from 'react-native-network-logger';
 import color from '../../commons/variable/color';
+import variables from '../../constants/variables';
 import { socket } from '../../hooks/socket';
+import Avatar from '../Avatar';
+import styles from './style';
 
 let PostItem = (props) => {
     
@@ -30,7 +29,7 @@ let PostItem = (props) => {
     const likeMutation = useMutation((data) => like(data), {
         onSuccess: async (data) => {
             setLikedUser(data.data);
-            if (userInfo.id !== userId.data.id) {
+            if (userId.data && userInfo.id !== userId.data?.id) {
                 socket.emit('like', { 
                     content: `${userInfo.username} đã thích ảnh của bạn`, 
                     isRead: false, 
@@ -125,19 +124,26 @@ let PostItem = (props) => {
                 <View style={styles.analytic}>
                     <View style={styles.analyticLike}>
                         <Icon name="smile-o" size={20} />
-                        <Text style={styles.number}>{likes?.data?.length}</Text>
+                        <Text style={styles.number}>{likes?.data?.length ? likes?.data?.length : null}</Text>
                     </View>
-                    <Text>
-                        {comments?.data?.length} bình luận
-                    </Text>
+                    {
+                        comments?.data?.length
+                        ? <Text>
+                            {comments?.data?.length} bình luận
+                        </Text>
+                        : null
+                    }
                 </View>
                 <View style={styles.actionBar}>
-                    <Text onPress={actionLike} style={{ fontWeight: "700", color: likedUser ? `${color.blue}` : `${color.black}` }} >Haha</Text>
-                    <Text onPress={() => {
-                            setVisibleBottomSheet(true)
-                        }} 
-                        style={{ fontWeight: "700" }} 
-                    >Bình luận</Text>
+                    <TouchableOpacity onPress={actionLike}>
+                        <Text style={{ fontWeight: "700", color: likedUser ? `${color.blue}` : `${color.black}` }} >Haha</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                                setVisibleBottomSheet(true)
+                            }} >
+                        <Text style={{ fontWeight: "700", color: color.black }} 
+                        >Bình luận</Text>
+                    </TouchableOpacity>
                     <Text style={{ fontWeight: "700" }} ></Text>
                     {/* <Icon name="share-alt" size={20} onPress={() => navigation.navigate('User')}/> */}
                 </View>

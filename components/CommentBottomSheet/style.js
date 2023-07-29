@@ -63,6 +63,12 @@ const styles = StyleSheet.create({
         paddingLeft: space.sp10,
         paddingRight: space.sp40,
         borderRadius: 999
+    },
+    loadingWrap: {
+        flex: 1,
+        flexDirection: flex.row,
+        justifyContent: flex.center,
+        alignItems: flex.center
     }
 })
 

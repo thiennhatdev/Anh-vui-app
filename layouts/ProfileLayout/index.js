@@ -1,9 +1,9 @@
-import { View, Text, FlatList, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import styles from './style';
 import color from '../../commons/variable/color';
+import styles from './style';
 
 
 const ProfileLayout = (props) => {

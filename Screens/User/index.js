@@ -1,11 +1,8 @@
-import { View, Text } from 'react-native'
-import React, { useCallback, useState, useEffect } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from "@react-navigation/native";
+import React, { useCallback, useEffect, useState } from 'react';
 import Auth from '../../components/Auth';
 import Profile from '../../components/Profile';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import ProfileDetail from '../../components/ProfileDetail';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIsFocused } from "@react-navigation/native"; 
 
 const User = (props) => {
   const { navigation } = props;

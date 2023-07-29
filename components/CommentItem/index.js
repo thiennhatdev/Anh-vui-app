@@ -1,17 +1,17 @@
-import { View, Text, TouchableOpacity, Dimensions, Alert, Image } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import styles from './style'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import Avatar from '../Avatar';
 import { useMutation } from 'react-query';
 import { dislike, like } from '../../apis/likes';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import variables from '../../constants/variables';
 import color from '../../commons/variable/color';
+import variables from '../../constants/variables';
 import { socket } from '../../hooks/socket';
+import Avatar from '../Avatar';
+import styles from './style';
 
 const CommentItem = (props) => {
     const { navigation, item, showInputReply } = props;
@@ -26,7 +26,7 @@ const CommentItem = (props) => {
             setLikedUser(data?.data);
             if (userInfo.id !== userId.data.id) {
                 socket.emit('like', { 
-                    content: `${userInfo.username} đã thích bình luận của bạn`, 
+                    content: `${userInfo.username} đã thích bình luận của bạn: "${content.substring(0,40)}"`, 
                     isRead: false, 
                     fromUserId: userInfo.id ,
                     toUserId: userId.data.id ,
@@ -81,18 +81,22 @@ const CommentItem = (props) => {
             <Avatar photo={userId?.data.attributes.photo} />
             <View style={styles.commentItemRight}>
                 <View style={styles.commentItemContent}>
-                    <Text>{content}</Text>
+                    <Text style={styles.contentText}>{content}</Text>
                 </View>
                 <View style={styles.commentItemBottom}>
                     <View style={styles.commentItemBottomLeft}>
-                        <Text onPress={actionLike} style={[styles.likeText, { color: likedUser ? `${color.blue}` : `${color.black}` }]}>Haha</Text>
-                        <Text style={styles.replyText} onPress={() => showInputReply(id, userId)}>Phản hồi</Text>
+                        <TouchableOpacity onPress={actionLike}>
+                            <Text style={[styles.likeText, { color: likedUser ? `${color.blue}` : `${color.black}` }]}>Haha</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => showInputReply(item, userId)}>
+                            <Text style={styles.replyText}>Phản hồi</Text>
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.commentItemBottomRight}>
                         <Text style={styles.replyTime}>{dayjs(createdAt).format('DD/MM/YYYY')}</Text>
                         <View style={styles.numberLike}>
                             <Icon name="smile-o" size={20} style={styles.smileIcon} />
-                            <Text>{likes?.data.length}</Text>
+                            <Text>{likes?.data.length || ""}</Text>
                         </View>
                     </View>
                 </View>

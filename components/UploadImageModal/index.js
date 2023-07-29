@@ -1,15 +1,14 @@
-import { View, Text, Image, Modal, Pressable, Alert, TouchableOpacity, TextInput } from 'react-native'
+import { CLOUDINARY_KEY, CLOUDINARY_UPLOAD_PRESET } from "@env";
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Alert, Image, Modal, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { uploadImage } from "../../apis/upload";
-import NetworkLogger from 'react-native-network-logger';
-import { CLOUDINARY_NAME, CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_KEY } from "@env";
 
-import styles from './style';
-import { useMutation } from 'react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useMutation } from 'react-query';
 import { createImage } from '../../apis/image';
+import styles from './style';
 
 let UploadImageModal = ({ isShowModal, toggle }) => {
     const inputRef = useRef();

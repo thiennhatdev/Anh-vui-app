@@ -1,16 +1,15 @@
-import { View, Text, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
+import { Alert, Text, TouchableOpacity } from 'react-native'
 import styles from './style'
 
 const Item = () => {
-console.log('hello')
     const onDelete = () => Alert.alert('Alert Title', 'My Alert Msg', [
         {
           text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
+          onPress: () => {},
           style: 'cancel',
         },
-        {text: 'OK', onPress: () => console.log('OK Pressed')},
+        {text: 'OK', onPress: () => {}},
       ])
 
   return (

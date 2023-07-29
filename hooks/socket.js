@@ -5,12 +5,3 @@ export const socket = io(HOST, {
     // transports: ["websocket"],
     forceNew: true
 })
-
-
-
-
-
-
-
-
-

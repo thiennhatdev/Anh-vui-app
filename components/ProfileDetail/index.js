@@ -1,11 +1,8 @@
-import { View, Text, FlatList } from 'react-native'
-import React, { useState } from 'react'
-import UserSelectFile from '../UserSelectFile';
-import PostItem from '../PostItem';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import React from 'react';
+import { Text, View } from 'react-native';
 
-import styles from './style';
 import ProfileLayout from '../../layouts/ProfileLayout/index.js';
+import styles from './style';
 
 
 const ProfileDetail = (props) => {
