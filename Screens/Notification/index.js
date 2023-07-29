@@ -1,26 +1,22 @@
-import { View, Text, FlatList, ActivityIndicator } from 'react-native'
-import React from 'react'
-import NotificationItem from '../../components/NotificationItem'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
+import React, { useContext, useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-
-import { socket } from '../../hooks/socket';
-import { useState } from 'react';
 import { useInfiniteQuery, useMutation, useQueryClient } from 'react-query';
 import { getNotifications, readNotifications } from '../../apis/notifications';
-import { useCallback } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect } from 'react';
-import NetworkLogger from 'react-native-network-logger';
-import { useIsFocused } from '@react-navigation/native';
+import NotificationItem from '../../components/NotificationItem';
 
-import styles from './style';
+import { AppContext } from '../../App';
 import color from '../../commons/variable/color';
+import styles from './style';
 
 let Notification = (props) => {
   const { onReadNotiSuccess } = props;
   const focus = useIsFocused();
   const queryClient = useQueryClient();
 
+  const { userAfterLogin, setUserAfterLogin } = useContext(AppContext);
   const [params, setParams] = useState({
     populate: {
       fromUserId: {
@@ -45,25 +41,31 @@ let Notification = (props) => {
     }
   })
   const [allPages, setAllPages] = useState(0);
+  const [firstFetching, setFirstFetching] = useState(true);
 
   const { isLoading, isFetching, isSuccess, data, hasNextPage, fetchNextPage } = useInfiniteQuery(
-    ['notifications', focus],
+    ['notifications', focus, userAfterLogin],
     async ({ pageParam = 1 }) => {
       const toUserId = await AsyncStorage.getItem("user_info");
       const parseUser = JSON.parse(toUserId);
+
       return getNotifications({
         ...params,
         filters: {
-          toUserId: parseUser.id
+          toUserId: parseUser?.id
         }
       }, pageParam);
     },
     {
+      enabled: userAfterLogin ? true : false,
+      onSuccess: () => {
+        setFirstFetching(false)
+      },
       getNextPageParam: (lastPage) => {
         return lastPage.pageParam < allPages
           ? lastPage.pageParam + 1
           : false;
-      },
+      }
     }
   );
 
@@ -101,10 +103,12 @@ let Notification = (props) => {
   }, [isSuccess, totalPage]);
 
   useEffect(() => {
-    readNotiMutation.mutate();
-  }, [focus])
+    if (userAfterLogin && focus) {
+      readNotiMutation.mutate();
+    }
+  }, [focus]);
 
-  if (isFetching) {
+  if (isFetching && firstFetching) {
     return<View style={styles.loadingWrap}>
        <ActivityIndicator size="large" color={color.blue} />
     </View>

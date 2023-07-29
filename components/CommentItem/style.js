@@ -16,7 +16,10 @@ const styles = StyleSheet.create({
         padding: space.sp10,
         borderRadius: space.sp15,
         backgroundColor: color.lightSilver,
-        marginBottom: space.sp5
+        marginBottom: space.sp5,
+    },
+    contentText: {
+        color: color.black
     },
     commentItemBottom: {
         flexDirection: flex.row,

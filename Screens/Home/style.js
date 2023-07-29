@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 import color from "../../commons/variable/color";
+import flex from "../../commons/variable/flex";
+import space from "../../commons/variable/space";
 
 const styles = StyleSheet.create({
     wrapper: {
@@ -34,6 +36,21 @@ const styles = StyleSheet.create({
     },
     contentHome: {
         flex: 1
+    },
+    emptyContent: {
+        flexDirection: flex.row,
+        justifyContent: flex.center,
+        alignItems: flex.center,
+        paddingVertical: space.sp20
+    },
+    warningIcon: {
+        marginRight: space.sp5,
+        color: color.red
+    },
+    emptyText: {
+        color: color.red,
+        fontSize: space.sp20
+
     }
 })
 

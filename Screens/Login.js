@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, Button, TextInput, Image } from 'react-native'
-import React from 'react'
-import { Formik } from 'formik'
+import { Formik } from 'formik';
+import React from 'react';
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import * as yup from 'yup';
 
 
@@ -23,7 +23,7 @@ const Login = () => {
               <Formik
                 validationSchema={loginValidationSchema}
                 initialValues={{ email: '', password: '' }}
-                onSubmit={values => console.log(values)}
+                onSubmit={values => {}}
               >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                   <>

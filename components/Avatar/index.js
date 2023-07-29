@@ -1,7 +1,7 @@
-import { Keyboard, View, Text, TouchableOpacity, Alert, SafeAreaView, TextInput, FlatList, ScrollView, Image } from 'react-native'
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
+import { Image, Text, View } from 'react-native';
 
-import styles from './style'
+import styles from './style';
 
 const Avatar = (props) => {
     const { photo } = props;

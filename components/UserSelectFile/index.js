@@ -1,14 +1,13 @@
-import { View, Text, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import styles from './style';
-import UploadImageModal from '../UploadImageModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import variables from '../../constants/variables';
 import { useIsFocused } from '@react-navigation/native';
+import variables from '../../constants/variables';
 import Avatar from '../Avatar';
+import UploadImageModal from '../UploadImageModal';
+import styles from './style';
 
 const UserSelectFile = (props) => {
   const { navigation } = props;

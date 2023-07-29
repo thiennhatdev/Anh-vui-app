@@ -1,24 +1,22 @@
-import { Keyboard, KeyboardAvoidingView, View, Text, TouchableOpacity, Dimensions, SafeAreaView, TextInput, FlatList, ScrollView } from 'react-native'
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import CommentItem from '../CommentItem';
-import { useKeyboardHeight } from '../../hooks/getHeightKeyboard';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import RBSheet from "react-native-raw-bottom-sheet";
 import { useSafeAreaFrame } from 'react-native-safe-area-context';
-import { debounce } from 'lodash';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useKeyboardHeight } from '../../hooks/getHeightKeyboard';
+import CommentItem from '../CommentItem';
 
-import styles from './style'
-import { comment, getComments } from '../../apis/comments';
-import { useInfiniteQuery, useMutation, useQueryClient } from 'react-query';
-import space from '../../commons/variable/space';
-import color from '../../commons/variable/color';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { socket } from '../../hooks/socket';
 import dayjs from 'dayjs';
+import { useInfiniteQuery, useMutation, useQueryClient } from 'react-query';
+import { comment, getComments } from '../../apis/comments';
+import color from '../../commons/variable/color';
+import { socket } from '../../hooks/socket';
+import styles from './style';
 
 
 
-const CommentBottomSheet = (props) => {
+let CommentBottomSheet = (props) => {
     const { navigation, visibleBottomSheet, onVisibleBottomSheet, numberLikes, postId, userId } = props;
 
     const keyboardHeight = useKeyboardHeight();
@@ -27,10 +25,12 @@ const CommentBottomSheet = (props) => {
     const queryClient = useQueryClient();
     const ScreenHeight = useSafeAreaFrame().height;
 
+    const [firstFetching, setFirstFetching] = useState(true);
     const [userInfo, setUserInfo] = useState(false);
     const [allPages, setAllPages] = useState(0);
     const [imageAndCmtOfUser, setImageAndCmtOfUser] = useState(userId)
     const [objTarget, setObjTarget] = useState({ imageId: postId })
+    const [commentReply, setCommentReply] = useState({});
     const [keyboardAvoiding, setKeyboardAvoiding] = useState(false)
     const [params, setParams] = useState({
         filters: {
@@ -66,12 +66,18 @@ const CommentBottomSheet = (props) => {
         }
     })
 
-    const { isLoading, isFetching, isSuccess, hasNextPage, fetchNextPage, data } = useInfiniteQuery(
-        'commentsOfPost',
+    const { isLoading, isFetching, isSuccess, hasNextPage, fetchNextPage, data, status } = useInfiniteQuery(
+        ['commentsOfPost', postId],
         async ({ pageParam = 1 }) => getComments(params, pageParam),
         {
+            onSuccess: () => {
+                setFirstFetching(false)
+            },
             getNextPageParam: (lastPage) => {
-                return lastPage.pageParam < allPages
+                const total = data?.pages[0].data.meta.pagination.total;
+                const totalPage = Math.ceil(total / params.pagination.pageSize)
+
+                return lastPage.pageParam < totalPage
                     ? lastPage.pageParam + 1
                     : false;
             },
@@ -80,38 +86,36 @@ const CommentBottomSheet = (props) => {
 
     const mutation = useMutation((data) => comment(data), {
         onSuccess: async (newPost) => {
-            if (userInfo.id !== imageAndCmtOfUser.data.id) {
-                socket.emit('like', { 
+            if (imageAndCmtOfUser.data && userInfo.id !== imageAndCmtOfUser.data.id) {
+                socket.emit('like', {
                     content: objTarget.imageId
-                                ? `${userInfo.username} đã bình luận về ảnh của bạn`
-                                : `${userInfo.username} đã phản hồi bình luận của bạn`, 
-                    isRead: false, 
-                    fromUserId: userInfo.id ,
-                    toUserId: imageAndCmtOfUser.data.id ,
+                        ? `${userInfo.username} đã bình luận về ảnh của bạn`
+                        : `${userInfo.username} đã phản hồi bình luận của bạn: "${commentReply.attributes.content.substring(0, 40)}"`,
+                    isRead: false,
+                    fromUserId: userInfo.id,
+                    toUserId: imageAndCmtOfUser.data.id,
                     publishedAt: dayjs(),
                     ...objTarget
-                    
+
                 })
 
             }
             await queryClient.prefetchInfiniteQuery(
-                ['commentsOfPost'],
-                async ({ pageParam = 1 }) => getComments(params, pageParam),)
+                ['commentsOfPost', postId],
+                async ({ pageParam = 1 }) => getComments(params, pageParam))
         },
     });
-
-    const total = data?.pages[0].data.meta.pagination.total;
-    const totalPage = Math.ceil(total / params.pagination.pageSize)
 
     const toggleBottomNavigationView = () => {
         onVisibleBottomSheet();
     };
 
-    const showInputReply = (idComment, userId) => {
+    const showInputReply = (comment, userId) => {
         inputRef.current.focus();
         setImageAndCmtOfUser(userId)
+        setCommentReply(comment)
         setObjTarget({
-            commentId: idComment
+            commentId: comment.id
         })
     }
 
@@ -135,12 +139,6 @@ const CommentBottomSheet = (props) => {
         inputRef.current.clear();
 
     }
-
-    useEffect(() => {
-        if (isSuccess) {
-            setAllPages(totalPage)
-        }
-    }, [isSuccess, totalPage]);
 
     useEffect(() => {
         if (visibleBottomSheet) refRBSheet.current.open();
@@ -168,44 +166,51 @@ const CommentBottomSheet = (props) => {
                     }
                 }}
             >
-                <View style={[styles.postCommentWrap, { height: ScreenHeight - 70 }]}>
-                    <View style={styles.numberLike}>
-                        <Text>{numberLikes || "Hãy là"} người thích bài viết này</Text>
-                    </View>
-                    <View style={[styles.postCommentContent, { height: ScreenHeight - 100 }]}>
-                        {
-                            data?.pages[0].data.data.length
-                                ?
-                                <FlatList
-                                    showsVerticalScrollIndicator={true}
-                                    data={data?.pages.map(page => page.data.data).flat()}
-                                    style={styles.commentFlatList}
-                                    renderItem={({ item }) => {
-                                        return (
-                                            <View>
-                                                <CommentItem navigation={navigation} item={item} showInputReply={showInputReply} />
-                                                <View style={styles.replyList}>
-                                                    <FlatList
-                                                        data={item.attributes?.comments?.data}
-                                                        renderItem={({ item }) => <CommentItem navigation={navigation} item={item} showInputReply={showInputReply} />}
-                                                        keyExtractor={item => item.id}
-                                                    />
-                                                </View>
-                                            </View>
-                                        )
-                                    }}
-                                    onEndReached={loadMore}
-                                    onEndReachedThreshold={0.3}
-                                    keyExtractor={item => item.id}
-                                />
-                                : <View style={styles.emptyComments}>
-                                    <Icon name="comments" size={30} />
-                                    <Text style={styles.emptyCommentsText}>Chưa có bình luận nào</Text>
-                                </View>
-                        }
+                {
+                    isFetching && firstFetching
+                        ? <View style={styles.loadingWrap}>
+                            <ActivityIndicator size="large" color={color.blue} />
+                        </View>
+                        : <View style={[styles.postCommentWrap, { height: ScreenHeight - 70 }]}>
+                            <View style={styles.numberLike}>
+                                <Text>{numberLikes || "Hãy là"} người thích bài viết này</Text>
+                            </View>
+                            <View style={[styles.postCommentContent, { height: ScreenHeight - 100 }]}>
+                                {
+                                    data?.pages[0].data.data.length
+                                        ?
+                                        <FlatList
+                                            showsVerticalScrollIndicator={true}
+                                            data={data?.pages.map(page => page.data.data).flat()}
+                                            style={styles.commentFlatList}
+                                            renderItem={({ item }) => {
+                                                return (
+                                                    <View>
+                                                        <CommentItem navigation={navigation} item={item} showInputReply={showInputReply} />
+                                                        <View style={styles.replyList}>
+                                                            <FlatList
+                                                                data={item.attributes?.comments?.data}
+                                                                renderItem={({ item }) => <CommentItem navigation={navigation} item={item} showInputReply={showInputReply} />}
+                                                                keyExtractor={item => item.id}
+                                                            />
+                                                        </View>
+                                                    </View>
+                                                )
+                                            }}
+                                            onEndReached={loadMore}
+                                            onEndReachedThreshold={0.3}
+                                            keyExtractor={item => item.id}
+                                        />
+                                        : <View style={styles.emptyComments}>
+                                            <Icon name="comments" size={30} />
+                                            <Text style={styles.emptyCommentsText}>Chưa có bình luận nào</Text>
+                                        </View>
+                                }
 
-                    </View>
-                </View>
+                            </View>
+                        </View>
+                }
+
                 <KeyboardAvoidingView style={[styles.postCommentInput, { marginBottom: Platform.OS === 'ios' && keyboardAvoiding ? keyboardHeight : 0 }]}>
                     <View style={styles.wrapInput}>
                         <TextInput
@@ -234,5 +239,8 @@ const CommentBottomSheet = (props) => {
 
     )
 }
+
+// CommentBottomSheet = () => <NetworkLogger />;
+
 
 export default CommentBottomSheet

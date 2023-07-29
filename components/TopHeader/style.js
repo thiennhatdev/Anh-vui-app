@@ -1,7 +1,6 @@
 import { StyleSheet } from "react-native";
 import color from "../../commons/variable/color";
 import flex from "../../commons/variable/flex";
-import space from "../../commons/variable/space";
 
 const styles = StyleSheet.create({  
     iconWrap: {

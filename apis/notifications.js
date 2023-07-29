@@ -1,6 +1,5 @@
 
 import qs from 'qs';
-import request from '../utils/request/request';
 import requestAuth from '../utils/request/request-auth';
 
 export const getNotifications = async (params = {}, pageParam) => {

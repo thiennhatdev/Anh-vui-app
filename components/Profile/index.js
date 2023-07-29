@@ -1,15 +1,8 @@
-import { View, Text, FlatList } from 'react-native'
-import React, { useState } from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native'
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import styles from './style';
-import ProfileDetail from '../ProfileDetail';
-import ProfileOptions from '../ProfileOptions';
+import React from 'react';
 import variables from '../../constants/variables';
+import ProfileOptions from '../ProfileOptions';
 import UserImage from '../UserImage';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 const Stack = createNativeStackNavigator();
 // const Drawer = createDrawerNavigator();

@@ -1,5 +1,5 @@
 import { View, Text, FlatList, TouchableOpacity, TouchableHighlight, Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import UserSelectFile from '../UserSelectFile';
 import PostItem from '../PostItem';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -12,6 +12,7 @@ import ProfileDetail from '../ProfileDetail';
 import variables from '../../constants/variables';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { AppContext } from '../../App';
 
 const ITEM_LIST = [
     {
@@ -32,11 +33,15 @@ const ITEM_LIST = [
 ]
 
 const ProfileOptions = ({ navigation }) => {
+    const { userAfterLogin, setUserAfterLogin } = useContext(AppContext);
 
     const navigate = async (route) => {
         if (route === variables.Logout) {
             await AsyncStorage.multiRemove(['user_info', 'token'])
             await GoogleSignin.signOut();
+
+            setUserAfterLogin(null)
+
             Alert.alert('', 'Đăng xuất thành công',
                 [
                   {

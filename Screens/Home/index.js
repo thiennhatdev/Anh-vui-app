@@ -1,25 +1,25 @@
-import { View, Text, Image, TouchableOpacity, FlatList, ScrollView, SafeAreaView, LogBox } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import PostItem from '../../components/PostItem';
+import { useIsFocused } from '@react-navigation/native';
+import React, { useContext, useEffect, useState } from 'react';
+import { FlatList, SafeAreaView, Text, View } from 'react-native';
+import Icon from 'react-native-vector-icons/AntDesign';
 import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
   useInfiniteQuery
 } from 'react-query';
+import PostItem from '../../components/PostItem';
 import UserSelectFile from '../../components/UserSelectFile';
-import NetworkLogger from 'react-native-network-logger';
 
-import styles from './style';
 import { getImages } from '../../apis/image';
 import SkeletonPost from '../../components/Skeleton/SkeletonPost';
+import styles from './style';
+import { AppContext } from '../../App';
 
 let Home = (props) => {
   const { navigation } = props;
+  const focus = useIsFocused();
 
+  const [firstFetching, setFirstFetching] = useState(true);
+  const [isEndContent, setIsEndContent] = useState(false);
+  const { userAfterLogin, setUserAfterLogin } = useContext(AppContext);
   const [params, setParams] = useState({
     populate: {
       userId: {
@@ -54,9 +54,12 @@ let Home = (props) => {
   const [allPages, setAllPages] = useState(0);
 
   const { isLoading, isFetching, isSuccess, data, hasNextPage, fetchNextPage } = useInfiniteQuery(
-    'images',
+    ['images', focus, userAfterLogin],
     async ({ pageParam = 1 }) => getImages(params, pageParam),
     {
+      onSuccess: () => {
+        setFirstFetching(false)
+      },
       getNextPageParam: (lastPage) => {
         return lastPage.pageParam < allPages
           ? lastPage.pageParam + 1
@@ -74,9 +77,12 @@ let Home = (props) => {
   }, [isSuccess, totalPage]);
 
   const loadMore = () => {
-    console.log(hasNextPage, 'hasNextPage..........')
     if (hasNextPage) {
       fetchNextPage();
+    } else {
+      if (!isFetching) {
+        setIsEndContent(true)
+      }
     }
   };
 
@@ -86,12 +92,20 @@ let Home = (props) => {
           <FlatList
             data={data?.pages.map(page => page.data.data).flat()}
             renderItem={({ item }) => {
-              return isFetching || isLoading ? <SkeletonPost /> : <PostItem item={item} navigation={navigation} />
+              return isFetching && firstFetching ? <SkeletonPost /> : <PostItem item={item} navigation={navigation} />
             }}
             keyExtractor={item => item.id}
             onEndReached={loadMore}
             onEndReachedThreshold={0.3}
             ListHeaderComponent={<UserSelectFile navigation={navigation} />}
+            ListFooterComponent={
+              isEndContent ?
+              <View style={styles.emptyContent}>
+                <Icon name="warning" size={20} style={styles.warningIcon} />
+                <Text style={styles.emptyText}>Bạn đã xem hết rồi!</Text>
+              </View>
+              : null
+            }
           />
         </View>
     </SafeAreaView>
@@ -99,5 +113,5 @@ let Home = (props) => {
 }
 
 // Home = () => <NetworkLogger />;
-// 
+
 export default Home

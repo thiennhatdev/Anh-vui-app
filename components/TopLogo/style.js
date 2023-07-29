@@ -1,10 +1,12 @@
 import { StyleSheet } from "react-native";
 import color from "../../commons/variable/color";
+import flex from "../../commons/variable/flex";
 
 const styles = StyleSheet.create({
     wrapLogo: {
-        flexDirection: "row", 
-        justifyContent: "center"
+        flexDirection: flex.row, 
+        justifyContent: flex.center,
+        backgroundColor: color.white
     },
     logo: {
         height: 70, 
